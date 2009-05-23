@@ -3,6 +3,11 @@ Contributors: advanpix
 Donate link: http://www.holoborodko.com/pavel/?page_id=1422
 Tags: latex, math, equations, QuickLaTeX.com
 Stable tag: 2.0
+Requires at least: 2.0=== WP QuickLaTeX ===
+Contributors: advanpix
+Donate link: http://www.holoborodko.com/pavel/?page_id=1422
+Tags: latex, math, equations, QuickLaTeX.com
+Stable tag: 2.1
 Requires at least: 2.0
 Tested up to: 2.7.1
 
@@ -39,4 +44,3 @@ Alternatively less-than '<' and greater-than '>' signs can be used instead of sq
 
 Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoborodko.com/pavel/?page_id=1422).
 I'll do my best to help you.
-
