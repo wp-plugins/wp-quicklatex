@@ -1,4 +1,4 @@
-=== WP QuickLaTeX ===
+ï»¿=== WP QuickLaTeX ===
 Contributors: advanpix
 Donate link: http://www.holoborodko.com/pavel/?page_id=1422
 Tags: latex, math, equations, QuickLaTeX.com
@@ -16,15 +16,17 @@ WP QuickLaTeX is the only one plugin which solves this issue.
 
 Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] tags. 
 WP QuickLaTeX will convert it to high-quality image and embed into post with proper positioning so that formula and surrounding text will blend together well.
+WP QuickLaTeX is based on free web service [QuickLaTeX.com](http://quicklatex.com/) and doesn't require 
+LaTeX to be installed on user's server or hosting account.
 
 == Installation ==
 
-WP QuickLaTeX is based on free web service [QuickLaTeX.com](http://quicklatex.com/) and doesn’t require 
-LaTeX to be installed on user’s server or hosting account. Just install the plugin and you are good to go.
+WP QuickLaTeX is based on free web service [QuickLaTeX.com](http://quicklatex.com/) and doesn't require 
+LaTeX to be installed on user's server or hosting account. Just install the plugin and you are good to go.
 
 1. Download WP-QuickLaTeX plug-in.
 2. Unzip the plugin file and upload its content to wp-content/plugins folder of your blog.
-3. Activate WP-QuickLaTeX through the ‘Plugins’ menu in Wordpress.
+3. Activate WP-QuickLaTeX through the 'Plugins' menu in Wordpress.
 
 == Frequently Asked Questions ==
 
