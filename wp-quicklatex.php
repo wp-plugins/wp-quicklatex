@@ -3,7 +3,7 @@
 	Plugin Name: WP QuickLaTeX
 	Plugin URI: http://www.holoborodko.com/pavel/?page_id=1422
 	Description: Allows user to insert mathematical formulas in the posts and comments using LaTeX language.				 Usual LaTeX plugins suffer from incorrect formula positioning relative to surrounding text producing "jumpy" equations painful for eyes and decreasing overall readability of the web article. WP QuickLaTeX is the only one plugin which solves this issue. Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] tags. WP QuickLaTeX will convert it to high-quality image and embed into post with proper positioning so that formula and surrounding text will blend together well.
-	Version: 2.1
+	Version: 2.2
 	Author: Pavel Holoborodko
 	Author URI: http://www.holoborodko.com/pavel/
 	Copyright: Pavel Holoborodko
@@ -48,12 +48,6 @@ class WP_QuickLatex{
 
 		// Decode HTML entities (numeric or literal) to characters, e.g. &amp; to &.
 		$formula_text = $this->unhtmlentities($formula_text);
-
-		// Remove all trailing whitespaces as well as replace many of them with only one.
-		$formula_text=ereg_replace(' +', ' ', trim($formula_text));
-
-		// Remove special control symbols
-		$formula_text=ereg_replace("[\r\t\n]","",$formula_text);
 		
 		// Build URI to request server
 		// Don't forget to acknowledge QuickLaTeX.com on your page
