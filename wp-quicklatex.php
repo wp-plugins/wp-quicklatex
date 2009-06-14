@@ -3,12 +3,18 @@
 	Plugin Name: WP QuickLaTeX
 	Plugin URI: http://www.holoborodko.com/pavel/?page_id=1422
 	Description: Allows user to insert mathematical formulas in the posts and comments using LaTeX language.				 Usual LaTeX plugins suffer from incorrect formula positioning relative to surrounding text producing "jumpy" equations painful for eyes and decreasing overall readability of the web article. WP QuickLaTeX is the only one plugin which solves this issue. Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] tags. WP QuickLaTeX will convert it to high-quality image and embed into post with proper positioning so that formula and surrounding text will blend together well.
-	Version: 2.2.1
+	Version: 2.3
 	Author: Pavel Holoborodko
 	Author URI: http://www.holoborodko.com/pavel/
 	Copyright: Pavel Holoborodko
 	License: GPL2
 */
+
+// CURL Extension Emulation Library by Steve Blinch
+// http://code.blitzaffe.com
+// require_once('libcurlemu.inc.php');
+
+if ( !defined('ABSPATH') ) exit;
 
 class WP_QuickLatex{
 	var $options;
@@ -17,10 +23,10 @@ class WP_QuickLatex{
 			//1. ToDo: Load Options if Any
 
 			//2. Add filters wisely (or register shortcode handlers)
-			add_filter('the_title', array(&$this, 'ql_convert'));
 			add_filter('the_content', array(&$this, 'ql_convert'));
+			add_filter('comment_text', array(&$this, 'ql_convert'));			
+			add_filter('the_title', array(&$this, 'ql_convert'));
 			add_filter('the_excerpt', array(&$this, 'ql_convert'));			
-			add_filter('comment_text', array(&$this, 'ql_convert'));
 	}
 
 	function ql_convert($content)
@@ -32,35 +38,87 @@ class WP_QuickLatex{
 	function ql_convert_callback($match)
 	{
 		$formula_text = $match[4];
-		
-		// Remove any HTML tags added by WordPress
-		// in the Visual Editing mode
-		$formula_text = strip_tags( $formula_text );
-		
-		// Latex doesn't understand some fancy symbols 
-		// inserted by WordPress as HTML numeric entities
-		// Make sure they are not included in the formula text.
-		// Add lines as needed using HTML symbol translation references:
-		// http://www.htmlcodetutorial.com/characterentities_famsupp_69.html
-		// http://www.ascii.cl/htmlcodes.htm
-		// http://leftlogic.com/lounge/articles/entity-lookup/
-		$formula_text = str_replace("&#8217","&#39",$formula_text); // single quote
 
-		// Decode HTML entities (numeric or literal) to characters, e.g. &amp; to &.
-		$formula_text = $this->unhtmlentities($formula_text);
-		
-		// Build URI to request server
-		// Don't forget to acknowledge QuickLaTeX.com on your page
-		$latex_server_url = 'http://www.quicklatex.com/latex.f?formula='.rawurlencode($formula_text);		
-		$server_resp = file_get_contents($latex_server_url);
+		// Caching begin
+		$formula_hash = md5($formula_text);
 
-		// Parse server's response
-		if (ereg("^([-]?[0-9]+)\r{1}\n{1}(.+)[ ]+([-]?[0-9]+)\r?\n?(.*)$", $server_resp, $regs)) {					
-			$status = $regs[1];
-			$image_url = $regs[2];
-			$image_align = $regs[3];
-			$error_msg = $regs[4];
+		$cache_dir = 'wp-content/ql-cache';
+		$cache_path = ABSPATH.$cache_dir; 
+
+		$info  = 'quicklatex-'.$formula_hash.'.txt';
+		$image = 'quicklatex-'.$formula_hash.'.gif';
+		$info_full_path  = $cache_path.'/'.$info;	
+
+		$image_full_path = $cache_path.'/'.$image;	
+		$image_url = get_bloginfo('wpurl').'/'.$cache_dir.'/'.$image;
+		
+ 		if (!is_file($info_full_path))
+		{
+				// Remove any HTML tags added by WordPress
+				// in the Visual Editing mode
+				$formula_text = strip_tags( $formula_text );
+		
+				// Latex doesn't understand some fancy symbols 
+				// inserted by WordPress as HTML numeric entities
+				// Make sure they are not included in the formula text.
+				// Add lines as needed using HTML symbol translation references:
+				// http://www.htmlcodetutorial.com/characterentities_famsupp_69.html
+				// http://www.ascii.cl/htmlcodes.htm
+				// http://leftlogic.com/lounge/articles/entity-lookup/
+				$formula_text = str_replace("&#8217","&#39",$formula_text); // single quote
+
+				// Decode HTML entities (numeric or literal) to characters, e.g. &amp; to &.
+				$formula_text = $this->unhtmlentities($formula_text);
+				
+				// Build URI to request server
+				// Don't forget to acknowledge QuickLaTeX.com on your page
+				$latex_server_url = "http://www.quicklatex.com/latex.f?formula=".rawurlencode($formula_text);		
+				$server_resp = file_get_contents($latex_server_url);						
+
+				// Parse server's response
+				if (ereg("^([-]?[0-9]+)\r{1}\n{1}(.+)[ ]+([-]?[0-9]+)\r?\n?(.*)$", $server_resp, $regs)) 
+				{					
+					$status = $regs[1];
+					$image_url = $regs[2];
+					$image_align = $regs[3];
+					$error_msg = $regs[4];
+					
+					if ($status == 0) // Everything is all right!
+					{
+						if(file_exists($cache_path) && is_writable($cache_path))
+						{
+							// Write txt file
+							$handle = fopen($info_full_path, "w");
+							fwrite($handle,$image_url."\n");
+							fwrite($handle,$image_align."\n");						
+							fclose($handle);
+							
+							// Download GIF file
+							/*
+							$ch = curl_init($image_url);
+							$fp = fopen($image_full_path, "w");
+							curl_setopt($ch, CURLOPT_FILE, $fp);
+							curl_setopt($ch, CURLOPT_HEADER, 0);
+							curl_exec($ch);
+							curl_close($ch);
+							fclose($fp);
+							*/							
+						}
+					}
+				}
+		}else{
+				// Use cached files
+				// Read txt file
+				$handle = fopen($info_full_path, "r");
+				$image_url = rtrim(fgets($handle),"\n");
+				$image_align = rtrim(fgets($handle),"\n");				
+				fclose($handle);
+
+				//
+				$status = 0;
 		}
+		
+		// Caching end
 
 		// Insert picture
 		if ($status == 0) // Everything is all right!

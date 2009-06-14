@@ -2,9 +2,9 @@
 Contributors: advanpix
 Donate link: http://www.holoborodko.com/pavel/?page_id=1422
 Tags: latex, math, equations, QuickLaTeX.com
-Stable tag: 2.2.1
+Stable tag: 2.3
 Requires at least: 2.0
-Tested up to: 2.7.1
+Tested up to: 2.8
 
 Allows user to embed LaTeX math into posts with proper positioning so that formulas and surrounding text blend together well.
 
@@ -27,6 +27,10 @@ LaTeX to be installed on user's server or hosting account. Just install the plug
 1. Download WP-QuickLaTeX plug-in.
 2. Unzip the plugin file and upload its content to wp-content/plugins folder of your blog.
 3. Activate WP-QuickLaTeX through the 'Plugins' menu in Wordpress.
+
+If you want maximum performance you might create `ql-cache` folder in `wp-content`. 
+It will be used by WP-QuickLaTeX to cache necessary data. This will decrease loading time of your pages. 
+Just make sure `ql-cache` is writable.
 
 == Frequently Asked Questions ==
 
