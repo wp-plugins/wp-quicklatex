@@ -30,7 +30,7 @@ LaTeX to be installed on user's server or hosting account. Just install the plug
 
 If you want maximum performance you might create `ql-cache` folder in `wp-content`. 
 It will be used by WP-QuickLaTeX for caching necessary data to decrease loading time of your pages. 
-Just make sure `ql-cache` is writable (by `chmod 777` or through File Manager in cPanel).
+Just make sure `ql-cache` is writable (by `chmod 767` or through File Manager in cPanel).
 
 == Frequently Asked Questions ==
 
