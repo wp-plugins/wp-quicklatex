@@ -3,7 +3,7 @@
 	Plugin Name: WP QuickLaTeX
 	Plugin URI: http://www.holoborodko.com/pavel/?page_id=1422
 	Description: Allows user to insert mathematical formulas in the posts and comments using LaTeX language.				 Usual LaTeX plugins suffer from incorrect formula positioning relative to surrounding text producing "jumpy" equations painful for eyes and decreasing overall readability of the web article. WP QuickLaTeX is the only one plugin which solves this issue. Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] tags. WP QuickLaTeX will convert it to high-quality image and embed into post with proper positioning so that formula and surrounding text will blend together well.
-	Version: 2.4
+	Version: 2.4.1
 	Author: Pavel Holoborodko
 	Author URI: http://www.holoborodko.com/pavel/
 	Copyright: Pavel Holoborodko
@@ -57,11 +57,7 @@ class WP_QuickLatex{
 		$cache_path = ABSPATH.$cache_dir; 
 
 		$info  = 'quicklatex-'.$formula_hash.'.txt';
-		$image = 'quicklatex-'.$formula_hash.'.gif';
 		$info_full_path  = $cache_path.'/'.$info;	
-
-		$image_full_path = $cache_path.'/'.$image;	
-		$image_url = get_bloginfo('wpurl').'/'.$cache_dir.'/'.$image;
 		
  		if (!is_file($info_full_path))
 		{
@@ -83,9 +79,7 @@ class WP_QuickLatex{
 				
 				// Build URI to request server
 				// Don't forget to acknowledge QuickLaTeX.com on your page
-				//$latex_server_url = "http://www.quicklatex.com/latex.f?formula=".rawurlencode($formula_text);		
-				//$server_resp = file_get_contents($latex_server_url);						
-				$server_resp = $this->file_get_contents_flex('www.quicklatex.com','latex.f?formula='.rawurlencode($formula_text));											
+				$server_resp = $this->file_get_contents_flex('www.quicklatex.com','latex.f?formula='.rawurlencode($formula_text).'?remhost='.get_option('siteurl'));											
 
 				if($server_resp==false){
 					return $this->fetch_errstr;
@@ -108,17 +102,6 @@ class WP_QuickLatex{
 							fwrite($handle,$image_url."\n");
 							fwrite($handle,$image_align."\n");						
 							fclose($handle);
-							
-							// Download GIF file
-							/*
-							$ch = curl_init($image_url);
-							$fp = fopen($image_full_path, "w");
-							curl_setopt($ch, CURLOPT_FILE, $fp);
-							curl_setopt($ch, CURLOPT_HEADER, 0);
-							curl_exec($ch);
-							curl_close($ch);
-							fclose($fp);
-							*/							
 						}
 					}
 				}

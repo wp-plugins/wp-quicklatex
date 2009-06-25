@@ -2,7 +2,7 @@
 Contributors: advanpix
 Donate link: http://www.holoborodko.com/pavel/?page_id=1422
 Tags: latex, math, equations, QuickLaTeX.com
-Stable tag: 2.4
+Stable tag: 2.4.1
 Requires at least: 2.0
 Tested up to: 2.8
 
@@ -56,9 +56,12 @@ used on the page. No additional actions required from the user – problem being
 
 == Change Log ==
 
+= 2.4.1 =
+* Increase speed by minor code refactoring.
+
 = 2.4 =
-* Increase speed by using cURL if allowed by the server configuration.
-* Support of restricted servers with disabled `allow_url_fopen`.
+* Increase speed by using cURL if allowed by the server configuration
+* Support of restricted servers with disabled `allow_url_fopen`
 
 = 2.3 =
 * Increase speed by formula properties caching  
