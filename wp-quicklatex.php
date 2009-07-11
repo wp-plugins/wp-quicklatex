@@ -3,7 +3,7 @@
 	Plugin Name: WP QuickLaTeX
 	Plugin URI: http://www.holoborodko.com/pavel/?page_id=1422
 	Description: Allows user to insert mathematical formulas in the posts and comments using LaTeX.				 Usual LaTeX plugins suffer from incorrect formula positioning relative to surrounding text producing "jumpy" equations painful for eyes and decreasing overall readability of the web article. WP QuickLaTeX is the only one plugin which solves this issue. Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] tags. WP QuickLaTeX will convert it to high-quality image and embed into post with proper positioning so that formula and surrounding text will blend together well.
-	Version: 2.5
+	Version: 2.5.1
 	Author: Pavel Holoborodko
 	Author URI: http://www.holoborodko.com/pavel/
 	Copyright: Pavel Holoborodko
@@ -58,6 +58,14 @@ class WP_QuickLatex{
 	function ql_kernel($formula)
 	{
 		$formula_text = $formula;
+
+		// Check for the centered derictive $$!.. $$
+		$center_image = false;
+		if (substr($formula_text, 0, 1) == "!") 
+		{
+			$center_image = true;
+			$formula_text = substr($formula_text, 1);
+		}
 
 		$formula_hash = md5($formula_text);
 
@@ -160,11 +168,18 @@ class WP_QuickLatex{
 		// Insert picture
 		if ($status == 0) // Everything is all right!
 		{
-			return "<img src=\"$image_url\" alt=\"$formula_text\" title=\"$formula_text\" style=\"vertical-align: ".-$image_align."px; border: none;\"/>";				
+			$out_str = "<img src=\"$image_url\" alt=\"$formula_text\" title=\"$formula_text\" style=\"vertical-align: ".-$image_align."px; border: none;\"/>";				
 		}
-		else	// Some error occured - show error picture instead of the formula
+		else{	// Some error occured - show error picture instead of the formula
+		
+			$out_str = "<img src=\"$image_url\" alt=\"$error_msg\" title=\"$error_msg\" style=\"vertical-align: -12px; border: none;\"/>";			
+		}
+		
+		if($center_image==true)
 		{
-			return "<img src=\"$image_url\" alt=\"$error_msg\" title=\"$error_msg\" style=\"vertical-align: -12px; border: none;\"/>";			
+			return '<center>'.$out_str.'</center>' ;
+		}else{
+			return $out_str ;		
 		}
 	}
 	
