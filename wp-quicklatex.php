@@ -2,8 +2,8 @@
 /*
 	Plugin Name: WP QuickLaTeX
 	Plugin URI: http://www.holoborodko.com/pavel/?page_id=1422
-	Description: Allows user to insert mathematical formulas in the posts and comments using LaTeX language.				 Usual LaTeX plugins suffer from incorrect formula positioning relative to surrounding text producing "jumpy" equations painful for eyes and decreasing overall readability of the web article. WP QuickLaTeX is the only one plugin which solves this issue. Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] tags. WP QuickLaTeX will convert it to high-quality image and embed into post with proper positioning so that formula and surrounding text will blend together well.
-	Version: 2.4.1
+	Description: Allows user to insert mathematical formulas in the posts and comments using LaTeX.				 Usual LaTeX plugins suffer from incorrect formula positioning relative to surrounding text producing "jumpy" equations painful for eyes and decreasing overall readability of the web article. WP QuickLaTeX is the only one plugin which solves this issue. Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] tags. WP QuickLaTeX will convert it to high-quality image and embed into post with proper positioning so that formula and surrounding text will blend together well.
+	Version: 2.5
 	Author: Pavel Holoborodko
 	Author URI: http://www.holoborodko.com/pavel/
 	Copyright: Pavel Holoborodko
@@ -40,15 +40,25 @@ class WP_QuickLatex{
 
 	function ql_convert($content)
 	{
-		$regex = '#(\[|<)(tex|math|latex)(\]|>)(.*?)(\[|<)/(tex|math|latex)(\]|>)#si';	
-		return preg_replace_callback($regex, array(&$this, 'ql_convert_callback'), $content);
+		return preg_replace_callback('#(\[|<)(tex|math|latex)(\]|>)(.*?)(\[|<)/(tex|math|latex)(\]|>)#si', 
+							  array(&$this, 'ql_callback_tags'),
+							  preg_replace_callback('#\$\$(.*?)\$\$#si', array(&$this, 'ql_callback_dollars'), $content));
+	}
+
+	function ql_callback_tags($match)
+	{
+		return $this->ql_kernel($match[4]);
+	}
+
+	function ql_callback_dollars($match)
+	{
+		return $this->ql_kernel($match[1]);
 	}
 	
-	function ql_convert_callback($match)
+	function ql_kernel($formula)
 	{
-		$formula_text = $match[4];
+		$formula_text = $formula;
 
-		// Caching begin
 		$formula_hash = md5($formula_text);
 
 		// The script will automatically create a folder called backup-db in wp-content 
@@ -56,8 +66,10 @@ class WP_QuickLatex{
 		$cache_dir = 'wp-content/ql-cache';
 		$cache_path = ABSPATH.$cache_dir; 
 
-		$info  = 'quicklatex-'.$formula_hash.'.txt';
-		$info_full_path  = $cache_path.'/'.$info;	
+		$info_file  = 'quicklatex-'.$formula_hash.'.txt';
+		$image_file = 'quicklatex-'.$formula_hash.'.gif';		
+		$info_full_path  = $cache_path.'/'.$info_file;	
+		$image_full_path = $cache_path.'/'.$image_file;	
 		
  		if (!is_file($info_full_path))
 		{
@@ -79,7 +91,7 @@ class WP_QuickLatex{
 				
 				// Build URI to request server
 				// Don't forget to acknowledge QuickLaTeX.com on your page
-				$server_resp = $this->file_get_contents_flex('www.quicklatex.com','latex.f?formula='.rawurlencode($formula_text).'?remhost='.get_option('siteurl'));											
+				$server_resp = $this->file_get_contents_flex('www.quicklatex.com','/latex.f?formula='.rawurlencode($formula_text).'?remhost='.get_option('siteurl'));											
 
 				if($server_resp==false){
 					return $this->fetch_errstr;
@@ -97,27 +109,53 @@ class WP_QuickLatex{
 					{
 						if(file_exists($cache_path) && is_writable($cache_path))
 						{
-							// Write txt file
+							// Cache info file
 							$handle = fopen($info_full_path, "w");
 							fwrite($handle,$image_url."\n");
 							fwrite($handle,$image_align."\n");						
 							fclose($handle);
+							
+							// Cache image file
+							$url = parse_url($image_url);
+							$image_data = $this->file_get_contents_flex($url['host'],$url['path']);
+							if($image_data != false)
+							{
+								$handle = fopen($image_full_path, "w");
+								fwrite($handle,$image_data);
+								fclose($handle);
+							}
 						}
 					}
 				}
 		}else{
-				// Use cached files
-				// Read txt file
+				// Use cached files		
+		
+				// Read info file
 				$handle = fopen($info_full_path, "r");
 				$image_url = rtrim(fgets($handle),"\n");
 				$image_align = rtrim(fgets($handle),"\n");				
 				fclose($handle);
 
-				//
+				// Use local image for formula if available
+				if(is_file($image_full_path))
+				{
+					$image_url = get_bloginfo('wpurl').'/'.$cache_dir.'/'.$image_file;				
+				}else{
+					// Try to cache it otherwise (if only info file was cached previousely before 2.5 version)
+					$url = parse_url($image_url);
+					$image_data = $this->file_get_contents_flex($url['host'],$url['path']);
+					if($image_data != false)
+						{
+							$handle = fopen($image_full_path, "w");
+							fwrite($handle,$image_data);
+							fclose($handle);
+							
+							$image_url = get_bloginfo('wpurl').'/'.$cache_dir.'/'.$image_file;											
+						}
+				}
+
 				$status = 0;
 		}
-		
-		// Caching end
 
 		// Insert picture
 		if ($status == 0) // Everything is all right!
@@ -126,7 +164,7 @@ class WP_QuickLatex{
 		}
 		else	// Some error occured - show error picture instead of the formula
 		{
-			return "<img src=\"$image_url\" alt=\"$error_msg\" title=\"$error_msg\" style=\"vertical-align: ".-$image_align."px; border: none;\"/>";			
+			return "<img src=\"$image_url\" alt=\"$error_msg\" title=\"$error_msg\" style=\"vertical-align: -12px; border: none;\"/>";			
 		}
 	}
 	
@@ -173,7 +211,7 @@ class WP_QuickLatex{
 	//	Returns remote file contents if ok, false otrherwise 
 	function file_get_contents_flex($host, $query)
 	{
-		$url = "http://$host/$query";		
+		$url = "http://$host$query";		
 
 		$this->fetch_errstr = '';
 		$this->fetch_errno = 0;
@@ -221,7 +259,7 @@ class WP_QuickLatex{
 				$this->fetch_errstr  = 'fsockopen error: '.$this->fetch_errstr;
 				return false;
 			} else {
-				$out = "GET /$query HTTP/1.0\r\n";
+				$out = "GET $query HTTP/1.0\r\n";
 				$out .= "Host: $host\r\n";
 				$out .= "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 GTB5 (.NET CLR 3.5.30729)\r\n";
 				$out .= "Accept: */*\r\n";		
