@@ -3,7 +3,7 @@
 	Plugin Name: WP QuickLaTeX
 	Plugin URI: http://www.holoborodko.com/pavel/?page_id=1422
 	Description: Allows user to insert mathematical formulas in the posts and comments using LaTeX.				 Usual LaTeX plugins suffer from incorrect formula positioning relative to surrounding text producing "jumpy" equations painful for eyes and decreasing overall readability of the web article. WP QuickLaTeX is the only one plugin which solves this issue. Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] tags. WP QuickLaTeX will convert it to high-quality image and embed into post with proper positioning so that formula and surrounding text will blend together well.
-	Version: 2.5.1
+	Version: 2.5.2
 	Author: Pavel Holoborodko
 	Author URI: http://www.holoborodko.com/pavel/
 	Copyright: Pavel Holoborodko
@@ -79,7 +79,7 @@ class WP_QuickLatex{
 		$info_full_path  = $cache_path.'/'.$info_file;	
 		$image_full_path = $cache_path.'/'.$image_file;	
 		
- 		if (!is_file($info_full_path))
+ 		if (!is_readable($info_full_path) /* !is_file($info_full_path) || */)
 		{
 				// Remove any HTML tags added by WordPress
 				// in the Visual Editing mode
@@ -238,7 +238,7 @@ class WP_QuickLatex{
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
 				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);		
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
+				//curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
 				curl_setopt($ch, CURLOPT_HEADER, 0);
 				curl_setopt($ch, CURLOPT_CRLF, 0);
 				

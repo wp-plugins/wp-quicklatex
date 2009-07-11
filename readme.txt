@@ -2,7 +2,7 @@
 Contributors: advanpix
 Donate link: http://www.holoborodko.com/pavel/?page_id=1422
 Tags: latex, math, equations, QuickLaTeX.com
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 Requires at least: 2.0
 Tested up to: 2.8.1
 
@@ -60,6 +60,9 @@ used on the page. No additional actions required from the user – problem being
 
 == Change Log ==
 
+= 2.5.2 =
+* Optimize cURL options to support safe mode.
+
 = 2.5.1 =
 * Support of $$!..$$ to center formulas horizontally (*displayed* formulas).
 
@@ -67,7 +70,6 @@ used on the page. No additional actions required from the user – problem being
 * Show detailed error messages from LaTeX compiler.
 * Increase speed by formula images caching.
 * Support of $$..$$ tags.
-
 
 = 2.4.1 =
 * Increase speed by minor code refactoring.
