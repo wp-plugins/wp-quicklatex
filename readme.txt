@@ -12,8 +12,9 @@ Allows user to embed LaTeX math into posts with proper positioning so that formu
 
 Allows user to insert mathematical formulas in the posts and comments using LaTeX. 
 Besides basic functionality WP-QuickLaTeX has unique features:
+
 1.	Proper formula positioning so it blends well with surrounding text. Say “NO” to jumpy equations produced by other plugins!
-2.	Meaningful error messages for mistakes in LaTeX code (see screenshot).
+1.	Meaningful error messages for mistakes in LaTeX code (see screenshot).
 
 Just wrap LaTeX code with [tex][/tex] or [latex][/latex] or [math][/math] or $$..$$ tags. 
 WP QuickLaTeX will convert it to high-quality image and embed into post properly.
