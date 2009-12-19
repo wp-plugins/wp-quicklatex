@@ -4,7 +4,7 @@ Donate link: http://www.holoborodko.com/pavel/?page_id=1422
 Tags: latex, math, equations, QuickLaTeX.com
 Stable tag: 2.5.3
 Requires at least: 2.0
-Tested up to: 2.8.4
+Tested up to: 2.9
 
 Allows user to embed LaTeX math into posts with proper positioning so that formulas and surrounding text blend together well.
 
