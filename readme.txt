@@ -6,7 +6,7 @@ Stable tag: 3.0.0
 Requires at least: 3.0.1
 Tested up to: 3.0.1
 
-Allows user to embed LaTeX math into posts and comments without compromising quality.
+Allows user to embed LaTeX math into posts and comments without compromising rendering quality.
 
 == Description ==
 
