@@ -6,7 +6,7 @@ Stable tag: 3.7.1
 Requires at least: 2.8
 Tested up to: 3.0.4
 
-Insert math in the posts and comments using native LaTeX syntax. Correct vertical alignment of inline formulas, AMS-LaTeX, tikZ, custom LaTeX document preamble.
+Insert math in the posts and comments using native LaTeX syntax. Correct vertical alignment of inline formulas, AMS-LaTeX, tikZ, custom LaTeX preamble.
 
 == Description ==
 
