@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, tikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.1
+Stable tag: 3.7.2
 Requires at least: 2.8
 Tested up to: 3.0.4
 
@@ -75,7 +75,6 @@ I'll do my best to help you.
 
 = 3.7.2 =
 * Fixed vertical misalignment caused by CSS collisions with some "bossy" themes. 
-
 
 = 3.7.1 =
 * Support of native LaTeX syntax embedded directly in the posts. Copy-paste exchange with offline LaTeX papers.

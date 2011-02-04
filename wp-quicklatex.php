@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Insert formulas & graphics in the posts and comments using native LaTeX shorthands directly in the text. Correct vertical positioning of the inline formulas, AMS-LaTeX environments & displayed equations numbering, <code>tikZ</code> graphics, custom LaTeX document preamble, copy-paste compatibility with offline LaTeX papers. Precise font properties tuning, meaningful error messages, caching. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
-		Version: 3.7.1
+		Version: 3.7.2
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
