@@ -6,19 +6,19 @@ Stable tag: 3.7.1
 Requires at least: 2.8
 Tested up to: 3.0.4
 
-Insert math in posts and comments using native LaTeX syntax. Correct vertical alignment of inline formulas, AMS-LaTeX, tikZ, custom LaTeX preamble.
+Insert math in posts/comments using native LaTeX syntax. Inline formulas, displayed equations with numbering, AMS-LaTeX, tikZ, custom LaTeX preamble.
 
 == Description ==
 
 Allows user to insert mathematical formulas & graphics in the posts and comments using LaTeX. 
 WP QuickLaTeX has these unique features:
 
-1.  Correct vertical formula image positioning relative to baseline of surrounding text. Say “NO” to jumpy equations produced by other plugins!
 1.  Standard LaTeX expressions can be cut and pasted directly into WordPress posts, pages, and comments; display environments require no enclosures, other expressions require only a surrounding <code>$..$</code> or <code>\[..\]</code>.  No need for enclosing tags <code>[latex] ... [/latex]</code>.
 1.  (AMS)LaTeX displayed math environments support: <code>equation, align, gather, multiline, flalign, alignat,</code> etc.
 1.  Automatic numbering of displayed equations. Override autonumbering with `\tag{}` LaTeX command.
 1.  Custom LaTeX document preamble, allowing added <code>\usepackage{}</code> and <code>\newcommand{}</code>.
 1.  <code>tikZ</code> and <code>pgfplots</code> graphics package support.
+1.  Correct vertical positioning of inline formulas relative to baseline of surrounding text. Say “NO” to jumpy equations produced by other plugins!
 1.  Meaningful error messages for mistakes in LaTeX code.
 1.  Precise font properties tuning: <code>size, text and background color</code>. 
 1.  Easy style customization using UI or CSS file.
@@ -43,7 +43,7 @@ To see plugin in action please visit math-pages on my blog, e.g. [Central Differ
 
 == Installation ==
 
-WP QuickLaTeX is based on the free web service [QuickLaTeX.com] (http://quicklatex.com/) and doesn't require 
+WP QuickLaTeX is based on the free web service [QuickLaTeX.com](http://quicklatex.com/) and doesn't require 
 LaTeX to be installed on user's server or hosting account. Just install the plugin and you are good to go.
 
 1. Download WP QuickLaTeX plug-in.
@@ -72,7 +72,7 @@ I'll do my best to help you.
 
 == Change Log ==
 
-= 3.6 =
+= 3.7.1 =
 * Improved rendering quality (PNG image output).
 * Support of native LaTeX shorthands embedded directly in the posts. Copy-paste LaTeX expressions into text.
 * `tikZ` graphics support, including `pgfplots` and `gnuplot` commands.
