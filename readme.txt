@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, tikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.2
+Stable tag: 3.7.1
 Requires at least: 2.8
 Tested up to: 3.0.4
 
