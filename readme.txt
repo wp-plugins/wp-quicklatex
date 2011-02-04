@@ -74,7 +74,7 @@ I'll do my best to help you.
 == Change Log ==
 
 = 3.7.2 =
-* Fixed CSS collisions with some "bossy" themes.
+* Fixed vertical misalignment caused by CSS collisions with some "bossy" themes. 
 
 = 3.7.1 =
 * Support of native LaTeX syntax embedded directly in the posts. Copy-paste exchange with offline LaTeX papers.
