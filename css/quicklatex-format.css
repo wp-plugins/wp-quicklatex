@@ -6,79 +6,76 @@
   
 /* Style for <img> tag of in-text formula */
 .ql-img-inline-formula {
-	background:none;
-	border:none;
-	padding:0px;
-	margin:0px;
+	background:none !important; 
+	border:none !important;
+	padding:0px !important;
+	margin:0px  !important;
 }
 
 /* Style for the <img> tag of displayed equation */
 .ql-img-displayed-equation{
-	background:none;
-	border:none;
-	padding:0px;
-	margin:0px;
-	vertical-align:middle;
-	display:inline-block;	
+	background:none  !important;
+	border:none  !important;
+	padding:0px  !important;
+	margin:0px   !important;
+	vertical-align:middle  !important;
+	display:inline-block  !important;	
 }
 
 /* Style for <img> tag of tikZ images */
 .ql-img-picture{
-	background:none;
-	border:none;
-	padding:0px;
-	margin:0px;
+	background:none  !important;
+	border:none  !important;
+	padding:0px  !important;
+	margin:0px  !important;
 }
 
 /* Style for <p> tag of displayed equation - align: center */
 .ql-center-displayed-equation {    
-	text-align:center;
-	white-space: nowrap;
-	overflow:hidden;
+	text-align:center  !important;
+	white-space: nowrap  !important;
+	overflow:hidden  !important;
 }
 
 /* Style for <p> tag of displayed equation - align: left */
 .ql-left-displayed-equation {
-	text-align:left;
-	white-space: nowrap;
-	overflow:hidden;
+	text-align:left  !important;
+	white-space: nowrap  !important;
+	overflow:hidden  !important;
 }
 
 /* Style for <p> tag of displayed equation - align: right */
 .ql-right-displayed-equation {
-	text-align:right;
-	white-space: nowrap;
-	overflow:hidden;
+	text-align:right  !important;
+	white-space: nowrap  !important;
+	overflow:hidden  !important;
 }
 
 /* Equation numbering - align: left */
 .ql-left-eqno{
-	width:50px;
-    text-align:left;
-	float:left;
-	display:inline-block;	
+	width:3em !important;
+    text-align:left !important;
+	float:left !important;
+	display:inline-block !important;	
+	font-size:110% !important;
 }
 
 /* Equation numbering - align: right */
 .ql-right-eqno{
-	width:50px;
-    text-align:right;
-	float:right;
-	display:inline-block;	
+	width:3em !important;
+    text-align:right !important;
+	float:right !important;
+	display:inline-block !important;	
+	font-size:110%	!important;
 }
 
-/* Equation numbering - align: custom */
-.ql-custom-eqno{
-	width:50px;
-    text-align:right;
-	float:right;
-	display:inline-block;	
-}
-
-/* tikZ picture styles*/
+/* <p> tikZ picture styles*/
 .ql-center-picture{
-	border:none;
-	text-align:center;
+	border:none  !important;
+	text-align:center  !important;
+	background:none !important; 
+	padding:0px !important;
+	margin:0px  !important;
 }
 
 /* Error reporting */
@@ -95,11 +92,4 @@
 	border:none;
 	padding:0px;
 	margin:0px;
-}
-
-/* Style for <p> tag of displayed equation - align: custom */
-.ql-custom-displayed-equation {    
-	text-align:left;
-	white-space: nowrap;
-	overflow:hidden;
 }

@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, tikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.1
+Stable tag: 3.7.2
 Requires at least: 2.8
 Tested up to: 3.0.4
 
@@ -73,6 +73,9 @@ I'll do my best to help you.
 
 == Change Log ==
 
+= 3.7.2 =
+* Fixed CSS collisions with some "bossy" themes.
+
 = 3.7.1 =
 * Support of native LaTeX syntax embedded directly in the posts. Copy-paste exchange with offline LaTeX papers.
 * `tikZ` graphics support, including `pgfplots` and `gnuplot` commands.
@@ -83,7 +86,6 @@ I'll do my best to help you.
 * Support of Thesis theme.
 * Numerous small fixes and improvements.
 * Server software is updated to support TexLive 2010 package.
-
 
 = 3.0.0 =
 * Server [QuickLaTeX.com](http://quicklatex.com/) and plugin [WP-QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/) have been completely rewritten. 

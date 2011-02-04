@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Insert formulas & graphics in the posts and comments using native LaTeX shorthands directly in the text. Correct vertical positioning of the inline formulas, AMS-LaTeX environments & displayed equations numbering, <code>tikZ</code> graphics, custom LaTeX document preamble, copy-paste compatibility with offline LaTeX papers. Precise font properties tuning, meaningful error messages, caching. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
-		Version: 3.7.1
+		Version: 3.7.2
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -1417,10 +1417,9 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 								// Apply ql-inline-formula style class, setup correct vertical alignment
 
 								$out_str  = "<img src=\"$image_url\" class=\"ql-img-inline-formula\" alt=\"".quicklatex_verbatim_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
-
-								//$out_str  = "<img src=\"$image_url\" class=\"ql-img-inline-formula\" alt=\"Rendered by QuickLaTeX.com\" title=\"Rendered by QuickLaTeX.com\"";
-								$out_str .= "style=\"vertical-align: ".-$image_align."px;\"/>";
-
+								
+								$out_str .= " style=\"vertical-align: ".-$image_align."px;\"/>";								
+								
 							}else{
 							
 								// Displayed equation
@@ -1452,7 +1451,9 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 								}
 								
 								// Place image on the page
-								$out_str .= "<img src=\"$image_url\""."class=\"ql-img-displayed-equation\" alt=\"".quicklatex_verbatim_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"/>";
+								$out_str .= "<img src=\"$image_url\""."class=\"ql-img-displayed-equation\" alt=\"".quicklatex_verbatim_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
+
+								$out_str .= "/>";
 
 								$out_str .= "</p>";
 
