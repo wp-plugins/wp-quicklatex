@@ -26,8 +26,9 @@ WP QuickLaTeX has these unique features:
 1.	QuickLaTeX.com automatically provides formula images, which are then cached on user's server.
 1.  Administrative settings page for setting global parameters; AJAX-ified.
 
-Just place LaTeX math expressions into your text; place <code>[latexpage]</code> on the page.
+Just place LaTeX math expressions into your text and enable QuickLaTeX on the page by <code>[latexpage]</code> command.
 WP QuickLaTeX will convert them to high-quality images and embed them into your post. Inline formulas will be properly aligned with the text.
+Displayed equations will be auto-numbered by LaTeX rules.
 To see plugin in action please visit math-pages on my blog, e.g. [Central Differences](http://www.holoborodko.com/pavel/numerical-methods/numerical-derivative/central-differences/),
 [Cubature formulas for the unit disk](http://www.holoborodko.com/pavel/numerical-methods/numerical-integration/cubature-formulas-for-the-unit-disk/), [Smooth noise robust differentiators](http://www.holoborodko.com/pavel/numerical-methods/numerical-derivative/smooth-low-noise-differentiators/), etc.
 
@@ -73,16 +74,16 @@ I'll do my best to help you.
 == Change Log ==
 
 = 3.7.1 =
-* Improved rendering quality (PNG image output).
-* Support of native LaTeX shorthands embedded directly in the posts. Copy-paste LaTeX expressions into text.
+* Support of native LaTeX syntax embedded directly in the posts. Copy-paste exchange with offline LaTeX papers.
 * `tikZ` graphics support, including `pgfplots` and `gnuplot` commands.
 * Automatic displayed equations numbering facility; `\tag{}` overrides autonumbering.
 * Styles are in separate CSS file now for easy customization.
 * Redesign of UI admin page. AJAX submission of options
-* Customization of AMS-packages options.
+* Improved rendering quality (PNG image output).
 * Support of Thesis theme.
 * Numerous small fixes and improvements.
 * Server software is updated to support TexLive 2010 package.
+
 
 = 3.0.0 =
 * Server [QuickLaTeX.com](http://quicklatex.com/) and plugin [WP-QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/) have been completely rewritten. 
