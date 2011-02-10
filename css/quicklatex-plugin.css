@@ -240,3 +240,19 @@ font-size:13px;
 	width: 25%;
 	margin-left:10px;	
 }
+
+#about-text{
+	font-size:1.1em;
+	text-align: justify;
+	line-height:120%;
+}
+
+.ql-powered{
+ color: #555555;
+ font-size: 14px;
+}
+
+.ql-about{
+line-height:160%;
+font-size:15px;
+}

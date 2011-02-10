@@ -2,23 +2,23 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, tikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.2
+Stable tag: 3.7.3
 Requires at least: 2.8
-Tested up to: 3.0.4
+Tested up to: 3.0.5
 
 Insert math in posts/comments using native LaTeX syntax. Inline formulas, displayed equations with numbering, AMS-LaTeX, tikZ, custom LaTeX preamble.
 
 == Description ==
 
-Allows user to insert mathematical formulas & graphics in the posts and comments using LaTeX. 
-WP QuickLaTeX has these unique features:
+Insert formulas & graphics in the posts and comments using native LaTeX shorthands directly in the text. Correct vertical positioning of the inline formulas, AMS-LaTeX environments & displayed equations numbering, <code>tikZ</code> graphics, custom LaTeX document preamble, copy-paste compatibility with offline LaTeX papers. Precise font properties tuning, meaningful error messages, caching. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
 
 1.  Standard LaTeX expressions can be cut and pasted directly into WordPress posts, pages, and comments; display environments require no enclosures, other expressions require only a surrounding <code>$..$</code> or <code>\[..\]</code>.  No need for enclosing tags <code>[latex] ... [/latex]</code>.
 1.  (AMS)LaTeX displayed math environments support: <code>equation, align, gather, multiline, flalign, alignat,</code> etc.
 1.  Automatic numbering of displayed equations. Override autonumbering with `\tag{}` LaTeX command.
+1.  Equation hyper-referencing by standard LaTeX rules with `\label{}`, `\ref{}`.
 1.  Custom LaTeX document preamble, allowing added <code>\usepackage{}</code> and <code>\newcommand{}</code>.
 1.  <code>tikZ</code> and <code>pgfplots</code> graphics package support.
-1.  Correct vertical positioning of inline formulas relative to baseline of surrounding text. Say “NO” to jumpy equations produced by other plugins!
+1.  Correct vertical positioning of inline formulas relative to baseline of surrounding text. Say â€œNOâ€ to jumpy equations produced by other plugins!
 1.  Meaningful error messages for mistakes in LaTeX code.
 1.  Precise font properties tuning: <code>size, text and background color</code>. 
 1.  Easy style customization using UI or CSS file.
@@ -73,8 +73,12 @@ I'll do my best to help you.
 
 == Change Log ==
 
+= 3.7.3 =
+* Equation hyper-referencing with `\label{}`, `\ref{}`.
+* Fixed bug with CSS styles for tikZ drawings. 
+
 = 3.7.2 =
-* Fixed vertical misalignment caused by CSS collisions with some "bossy" themes.  
+* Fixed vertical misalignment caused by CSS collisions with some "bossy" themes. 
 
 = 3.7.1 =
 * Support of native LaTeX syntax embedded directly in the posts. Copy-paste exchange with offline LaTeX papers.

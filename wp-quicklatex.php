@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Insert formulas & graphics in the posts and comments using native LaTeX shorthands directly in the text. Correct vertical positioning of the inline formulas, AMS-LaTeX environments & displayed equations numbering, <code>tikZ</code> graphics, custom LaTeX document preamble, copy-paste compatibility with offline LaTeX papers. Precise font properties tuning, meaningful error messages, caching. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
-		Version: 3.7.2
+		Version: 3.7.3
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -332,7 +332,7 @@ if ( is_admin() ) {
 		<?php
 			if( $options['use_cache'] == 1 )
 				if( false == is_quicklatex_cache_writable(WP_QUICKLATEX_CACHE_DIR) )
-					echo '<div id="message" class="error"><p style="line-height:150%;"><strong>Cannot access directory to cache formula images: <i>'.WP_QUICKLATEX_CACHE_DIR.'</i></strong>.<br />'.'Please create it and make sure it is writable (by <span class="ql-code" style="font-size:13px;">chmode 777</span> or through File Manager in cPanel).'.'<br />'.'<strong>Do not ignore this warning -- caching is crucial for performance of your site.</strong>'.'</p></div>';
+					echo '<div id="message" class="error"><p style="line-height:150%;"><strong>QuickLaTeX cannot access cache directory for formula images: <i>'.WP_QUICKLATEX_CACHE_DIR.'</i></strong>.<br />'.'Please create it and make sure it is writable (by <span class="ql-code" style="font-size:13px;">chmode 777</span> or through File Manager in cPanel).'.'<br />'.'<strong>Do not ignore this warning -- caching is crucial for performance of your site.</strong>'.'</p></div>';
 		?>
 
 	<div id="wrap" >
@@ -379,13 +379,15 @@ At first, we sample $f(x)$ in the $N$ ($N$ is odd) equidistant points around $x^
 \]<br />
 where $h$ is some step.<br />
 Then we interpolate points $\{(x_k,f_k)\}$ by polynomial <br />
-\begin{equation}<br />
+\begin{equation}&nbsp;\label{eq:poly}<br />
 &nbsp;&nbsp;&nbsp;P_{N-1}(x)=\sum_{j=0}^{N-1}{a_jx^j}<br />
 \end{equation}<br />
 Its coefficients $\{a_j\}$ are found as a solution of system of linear equations:<br />
-\begin{equation}<br />
+\begin{equation}&nbsp;\label{eq:sys}<br />
 &nbsp;&nbsp;&nbsp;\left\{ P_{N-1}(x_k) = f_k\right\},\quad  k=-\frac{N-1}{2},\dots,\frac{N-1}{2}<br />
 \end{equation}<br />
+Here are references to existing equations: (\ref{eq:poly}), (\ref{eq:sys}).<br />
+Here is reference to non-existing equation (\ref{eq:unknow}).<br />
 						</div>
 						<p>
 						Same page processed by QuickLaTeX and published (how visitors see it in a browser):
@@ -718,6 +720,13 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 
 					<!-- About -->
 					<div id="tab-about">
+<p class="ql-about">
+QuickLaTeX is free under linkware license. Which means that service can be used (a) on non-commercial websites (b) with visible and direct backlink to <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a>.
+</p>
+
+<p class="ql-about">
+<strong><span class="ql-powered">"Powered by <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX</a>"</span></strong> somewhere on the site would greatly support us and inspire future development.  
+</p>
 						&#9632;&nbsp;People behind QuickLaTeX
 						<DL class="ql-devs">
 							<DT><a href="http://holoborodko.com/pavel/" target="_blank">Pavel Holoborodko</a></dt>
@@ -1028,7 +1037,11 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 
 	// Set default global settings
 	$ql_atts = null;
-
+	
+	// \label{}, \ref{} mechanics
+	$ql_label_eqno = null;
+	$ql_label_link = null;
+	
 	// Compile formula with parameters
 	// called by do_quicklatex_tag()
 	function quicklatex_kernel($atts, $formula_rawtext)
@@ -1038,6 +1051,8 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 		global $ql_eqalign, $ql_eqnoalign, $ql_latexsyntax;
 		global $ql_autoeqno;
 		global $ql_imageformat;
+		global $ql_label_eqno;
+		global $ql_label_link;
 
 		// Default atts for formula compilation - inherited from globals
 		$default_atts = array(
@@ -1108,6 +1123,7 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 		$tikz_width = $width;
 		$auto_eqno = false;
 		$eqno_parentheses = true; // could be a global option in ??? future
+		$label_link = null;
 
 		$imageformat = $ql_imageformat; //shortcut for global var
 
@@ -1241,14 +1257,31 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 						}
 					}
 				}
-
-				if($displayed_equation)
+			}
+			
+			// If we have number for equation then 
+			if(isset($eqno))
+			{
+				// search for \label{} command
+				if(preg_match('/(\\\\label\{(.*?)\})/si',$formula_text,$m))
 				{
-					// Remove empty lines - important for displayed environments
-					// This kind of sanitization should be done last, after [preamble] processing, etc.
-					// http://stackoverflow.com/questions/709669/how-do-i-remove-blank-lines-from-text-in-php
-					$formula_text = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $formula_text);
-				}
+					$label_id = trim($m[2]);
+					$label_link = "id".crc32($formula_text);
+					
+					$ql_label_eqno[$label_id] = $eqno;
+					$ql_label_link[$label_id] = $label_link;
+					
+					// Remove \label{} text from the formula to avoid it compilation be server
+					$formula_text = str_replace($m[1],'', $formula_text);
+				}				
+			}
+			
+			if($displayed_equation)
+			{
+				// Remove empty lines - important for displayed environments
+				// This kind of sanitization should be done last, after [preamble] processing, etc.
+				// http://stackoverflow.com/questions/709669/how-do-i-remove-blank-lines-from-text-in-php
+				$formula_text = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $formula_text);
 			}
 
 		  	// Build hash based on local and global settings.
@@ -1424,9 +1457,14 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 							
 								// Displayed equation
 								// set up CSS based on tag prameter && global setting
-								
-								// We need image_height for correct vertical centering
-								$out_str = '<p class="'.$align_css[$align].'"';
+								$out_str = "";
+
+								// Insert link for further references
+								if(!is_null($label_link))
+								    $out_str .= "<a name=\"$label_link\"></a>";
+
+								// We need image_height for correct vertical centering									
+								$out_str .= '<p class="'.$align_css[$align].'"';
 								if($image_height >= 0) 
 									$out_str .= " style=\"line-height: ".$image_height."px;\"";
 									
@@ -1480,6 +1518,12 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 		global $ql_latexsyntax;
 	    global $ql_autoeqno;
 		global $ql_atts;
+		global $ql_label_eqno;
+		global $ql_label_link;
+
+		// Reset labels, refs on every page
+		$ql_label_eqno = array();
+		$ql_label_link = array();
 
 		// Reset eqno for every post
 		$ql_autoeqno = 1;
@@ -1529,7 +1573,10 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 			// !$$ ... $$ - print source code with <pre> ... </pre>
 			$content = preg_replace_callback('/(!*\$\$(.*?)\$\$)/s','do_quicklatex_doubledollars',$content);
 		}
-
+		
+		// Make correct referencing of equations if any
+		$content = preg_replace_callback('/(!*\\\\ref\{(.*?)\})/si','do_quicklatex_references', $content);
+		
 		return $content;
 	}
 
@@ -1610,6 +1657,29 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 		return $content;
 	}
 
+	function do_quicklatex_references($m)
+	{
+		global $ql_label_eqno;
+		global $ql_label_link;
+
+		$wrap_text	= trim($m[1]);		
+		$label_id 	= trim($m[2]);
+
+		if(substr($wrap_text, 0, 1) == "!")
+		{
+			// Show source code if the first symbol !, e.g:	!$ ... $
+			return quicklatex_verbatim_text(substr($wrap_text, 1));
+		}else{
+			// Check do we have this label in the list of existing labels.
+			if(!empty($ql_label_eqno[$label_id]))
+			{
+				return "<a href=\"#$ql_label_link[$label_id]\">".$ql_label_eqno[$label_id]."</a>";
+			}else{
+				return "??";			
+			}
+		}
+	}
+	
 	// Process [latex] & envs. in one loop - for correct auto numbering
 	// Mixed syntaxis - [latex] & native environments
 	function do_quicklatex_mixed_syntax($m)
