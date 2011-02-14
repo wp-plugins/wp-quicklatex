@@ -75,6 +75,7 @@ I'll do my best to help you.
 
 = 3.7.4 =
 * Added facility to escape `[latexpage]` tag from processing. Use `!` just before it.
+* Disabled `$$ .. $$` processing on non-[latexpage] pages.
 
 = 3.7.3 =
 * Equation hyper-referencing with `\label{}`, `\ref{}`.
