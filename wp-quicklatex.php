@@ -2,8 +2,8 @@
 /*
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
-		Description: Insert formulas & graphics in the posts and comments using native LaTeX shorthands directly in the text. Correct vertical positioning of the inline formulas, AMS-LaTeX environments & displayed equations numbering, <code>tikZ</code> graphics, custom LaTeX document preamble, copy-paste compatibility with offline LaTeX papers. Precise font properties tuning, meaningful error messages, caching. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
-		Version: 3.7.3
+		Description: Insert formulas & graphics in the posts and comments using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info. 
+		Version: 3.7.4
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -387,7 +387,7 @@ Its coefficients $\{a_j\}$ are found as a solution of system of linear equations
 &nbsp;&nbsp;&nbsp;\left\{ P_{N-1}(x_k) = f_k\right\},\quad  k=-\frac{N-1}{2},\dots,\frac{N-1}{2}<br />
 \end{equation}<br />
 Here are references to existing equations: (\ref{eq:poly}), (\ref{eq:sys}).<br />
-Here is reference to non-existing equation (\ref{eq:unknow}).<br />
+Here is reference to non-existing equation (\ref{eq:unknown}).<br />
 						</div>
 						<p>
 						Same page processed by QuickLaTeX and published (how visitors see it in a browser):
@@ -1030,7 +1030,8 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 	$ql_latexsyntax 	= $ql_options['latex_syntax'];
 	$ql_exclude_dollars = $ql_options['exclude_dollars'];
 	$ql_imageformat 	= $ql_options['image_format'];
-
+	$ql_nlspage 		= $ql_latexsyntax; // Do we have NLS page or not?
+	
 	// Autonumbering.
 	// Set equation number to 1 on the page start
 	$ql_autoeqno = 1;
@@ -1520,7 +1521,8 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		global $ql_atts;
 		global $ql_label_eqno;
 		global $ql_label_link;
-
+		global $ql_nlspage;
+		
 		// Reset labels, refs on every page
 		$ql_label_eqno = array();
 		$ql_label_link = array();
@@ -1528,31 +1530,13 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		// Reset eqno for every post
 		$ql_autoeqno = 1;
 
-		// Detect [latexpage] and handle it parameters - global for all page
-		$nlspage = $ql_latexsyntax;
-		if(preg_match('/(\[latexpage\b(.*?)\])/si', $content, $m))
-		{
-			// Parse tag parameters
-			$attr = shortcode_parse_atts(quicklatex_sanitize_text($m[2]));
+		$ql_nlspage = $ql_latexsyntax;
 
-			// Setup starting eqno for the page
-			if(isset($attr['eqno']))
-			{
-				$ql_autoeqno = $attr['eqno'];
-				unset($attr['eqno']);
-			}
+		// Detect [latexpage] and handle it parameters - global for all page		
+		// Attention! This routine can change global variables like $ql_nlspage, $ql_autoeqno, $ql_atts
+		$content = preg_replace_callback('/(!*\[latexpage\b(.*?)\])/si','do_quicklatex_latexpage',$content);		
 
-			// Set global attributes for the page
-			$ql_atts = $attr;
-
-			// Remove [latexpage] tag from the page
-			$content = str_replace($m[1], '', $content);
-
-			// Enable NLS for the page
-			$nlspage = true;
-		}
-
-		if($nlspage == true)
+		if($ql_nlspage == true)
 		{
 			// Parse mixed syntax: NLS + [latex] + [latexregion]
 			$content = quicklatex_native_syntax_parser($content,true);
@@ -1655,6 +1639,43 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		}
 
 		return $content;
+	}
+	
+	// [!][latexpage ...]
+	function do_quicklatex_latexpage($m)
+	{
+		global $ql_nlspage;
+		global $ql_atts;
+		global $ql_autoeqno;
+		
+		$wrap_text	= $m[1];		
+		$attr = $m[2];
+		
+		if(substr($wrap_text, 0, 1) == "!")
+		{
+			// Show source code if the first symbol !, e.g:	!$ ... $
+			return quicklatex_verbatim_text(substr($wrap_text, 1));
+		}else{
+		
+			// Parse tag parameters
+			$attr = shortcode_parse_atts(quicklatex_sanitize_text($attr));
+
+			// Setup starting eqno for the page
+			if(isset($attr['eqno']))
+			{
+				$ql_autoeqno = $attr['eqno'];
+				unset($attr['eqno']);
+			}
+
+			// Set global attributes for the page
+			$ql_atts = $attr;
+
+			// Remove [latexpage] tag from the page
+			$content = str_replace($m[1], '', $content);
+
+			// Enable NLS for the page
+			$ql_nlspage = true;
+		}
 	}
 
 	function do_quicklatex_references($m)
