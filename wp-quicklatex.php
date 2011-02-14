@@ -1555,7 +1555,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 
 			//  $$ ... $$, $$! ... $$ - just for the backward compatibility.
 			// !$$ ... $$ - print source code with <pre> ... </pre>
-			$content = preg_replace_callback('/(!*\$\$(.*?)\$\$)/s','do_quicklatex_doubledollars',$content);
+			//$content = preg_replace_callback('/(!*\$\$(.*?)\$\$)/s','do_quicklatex_doubledollars',$content);
 		}
 		
 		// Make correct referencing of equations if any
@@ -1613,7 +1613,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		// !\[ ... \] - verbatim source code
 		$content = preg_replace_callback('/(!*\\\\\[.*?\\\\\])/s','do_quicklatex_displayed_equations', $content);
 
-		//  $$ ... $$, $$! ... $$ - just for the compatibility.
+		//  $$ ... $$
 		// !$$ ... $$ - verbatim source code
 		$content = preg_replace_callback('/(!*\$\$(.*?)\$\$)/s','do_quicklatex_doubledollars',$content);
 
