@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Insert formulas & graphics in the posts and comments using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info. 
-		Version: 3.7.4
+		Version: 3.7.5
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -68,162 +68,241 @@
 
 */
 
-// Prevent direct call to this php file
-if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
+	// Prevent direct call to this php file
+	if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
-/* Version check */
-global $wp_version;
+	/* Version check */
+	global $wp_version;
 
-$exit_msg='WP QuickLaTeX requires Wordpress 2.8 or newer. Please update!';
+	$exit_msg='WP QuickLaTeX requires Wordpress 2.8 or newer. Please update!';
 
-if (version_compare($wp_version,"2.8","<")){
-	exit ($exit_msg);
-}
-
-// Define some constants http://codex.wordpress.org/Determining_Plugin_and_Content_Directories
-if ( ! defined( 'WP_CONTENT_DIR' ) )
-      define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
-
-if ( ! defined( 'WP_PLUGIN_DIR' ) )
-      define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
-
-if ( ! defined( 'WP_QUICKLATEX_PLUGIN_DIR' ) )
-      define( 'WP_QUICKLATEX_PLUGIN_DIR', plugin_dir_url(__FILE__));
-
-if ( ! defined( 'WP_QUICKLATEX_CACHE_DIR' ) )
-      define( 'WP_QUICKLATEX_CACHE_DIR', WP_CONTENT_DIR.'/ql-cache' );
-
-if ( ! defined( 'WP_QUICKLATEX_CACHE_URL' ) )
-      define( 'WP_QUICKLATEX_CACHE_URL', content_url(). '/ql-cache' );
-
-
-//Load Styles
-function quicklatex_includes()
-	{
-		wp_register_style('wp-quicklatex-format', WP_QUICKLATEX_PLUGIN_DIR.'css/quicklatex-format.css');
-		wp_enqueue_style('wp-quicklatex-format');
+	if (version_compare($wp_version,"2.8","<")){
+		exit ($exit_msg);
 	}
 
-add_action('init','quicklatex_includes');
+	if( !class_exists( 'WP_Http' ) )
+			include_once( ABSPATH . WPINC. '/class-http.php' );
 
+	// Define some constants http://codex.wordpress.org/Determining_Plugin_and_Content_Directories
+	if ( ! defined( 'WP_CONTENT_DIR' ) )
+		  define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
 
-if ( is_admin() ) {
+	if ( ! defined( 'WP_PLUGIN_DIR' ) )
+		  define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
+
+	if ( ! defined( 'WP_QUICKLATEX_PLUGIN_DIR' ) )
+		  define( 'WP_QUICKLATEX_PLUGIN_DIR', plugin_dir_url(__FILE__));
+
+	if ( ! defined( 'WP_QUICKLATEX_CACHE_DIR' ) )
+		  define( 'WP_QUICKLATEX_CACHE_DIR', WP_CONTENT_DIR.'/ql-cache' );
+
+	if ( ! defined( 'WP_QUICKLATEX_CACHE_URL' ) )
+		  define( 'WP_QUICKLATEX_CACHE_URL', content_url(). '/ql-cache' );
+		  
+		  
+	// Default settings (you can use the filter to modify these)
+	$def_options = array(
+		'font_size'      	=> 17, 			    // 17px
+		'font_color' 	 	=> '000000',		// black text
+		'bg_type'        	=> 0, 				// Transparent
+		'bg_color'       	=> 'ffffff',		// white background if opaque
+		'latex_mode'     	=> 0,  				// auto mode
+		'preamble'       	=> "\\usepackage{amsmath}\n\\usepackage{amsfonts}\n\\usepackage{amssymb}\n",
+		'use_cache'      	=> 1,  				// use cache
+		'show_errors'		=> 0,  				// 0 - do not show errors
+		'add_footer_link'	=> 0,				// 0 - do not use it
+		'is_preamble_corrected' => 1,			// is preamble corrected
+		'displayed_equations_align' => 0,		// 0 - center, 1 - left, 2 -right
+		'eqno_align'				=> 0,		// 0 - right, 1 - left
+
+												// Plugin always handles [latex]...[/latex] tags and $$ .. $$, $$! ... $$ for compatibility
+												// with older plugin versions.
+												// User can use additional settings:
+		'latex_syntax'			    => 0,		//  0 - Compatibility with LaTeX :
+												//  \( ... \), $ ... $ - inline formulas, use \$ to escape $ from compilation
+												//  \[ ... \], $$ .. $$ - displayed equations
+												//  \begin{equation[*]} ... \end{equation}
+												//  \begin{align[*]} ... \end{align}
+												//	\begin{gather[*]} ...  \end{gather}
+												//  \begin{multline[*]} ...
+												//  \begin{flalign[*]} ...
+												//  \begin{eqnarray[*]} ...
+												//  \begin{alignat[*]} ...
+												//  \begin{displaymath[*]} ...
+
+		'exclude_dollars'		    => 0,		//  1 - Exclude $ ... $ from processing
+
+		'image_format'				=> 1		// Image Format:
+												// 0 - GIF
+												// 1 - PNG
+												// 2 - SVG
+												// 3 - Automatic
+	);
+	
+	// Set Globals to Defaults
+	$ql_size        	= $def_options['font_size'];
+	$ql_color       	= $def_options['font_color'];
+	$ql_bg_type     	= $def_options['bg_type'];
+	$ql_bg_color    	= $def_options['bg_color'];
+	$ql_mode        	= $def_options['latex_mode'];
+	$ql_preamble    	= quicklatex_sanitize_text($def_options['preamble']);
+	$ql_use_cache   	= $def_options['use_cache'];
+	$ql_show_errors 	= $def_options['show_errors'];
+	$ql_link        	= $def_options['add_footer_link'];
+	$ql_eqalign     	= $def_options['displayed_equations_align'];
+	$ql_eqnoalign   	= $def_options['eqno_align'];
+	$ql_latexsyntax 	= $def_options['latex_syntax'];
+	$ql_exclude_dollars = $def_options['exclude_dollars'];
+	$ql_imageformat 	= $def_options['image_format'];
+	$ql_nlspage 		= $ql_latexsyntax; // Do we have NLS page or not?
+	
+	// Autonumbering.
+	// Set equation number to 1 on the page start
+	$ql_autoeqno = 1;
+
+	// Set default global settings
+	$ql_atts = null;
+	
+	// \label{}, \ref{} mechanics
+	$ql_label_eqno = null;
+	$ql_label_link = null;
+
+	// Diagnostic
+	$ql_fpp  = 0;
+	
+	// Register main actions	  
+	add_action('init','quicklatex_init');
+	add_action('admin_init', 'quicklatex_admin_init');
+	add_action('admin_menu', 'quicklatex_menu');
 
 	if (function_exists('register_uninstall_hook'))
     	register_uninstall_hook(__FILE__, 'uninstall_quicklatex');
-
-	// Check do we have options in DB. Write defaults if not.
-	$g_options = get_option('quicklatex');
-	if($g_options == false)
+	
+	//Load Styles, Create DB, Register hooks
+	function quicklatex_init()
 	{
-		// Create array of default settings (you can use the filter to modify these)
-		$quicklatex_defaultsettings = array(
-			'font_size'      	=> 17, 			    // 17px
-			'font_color' 	 	=> '000000',		// black text
-			'bg_type'        	=> 0, 				// Transparent
-			'bg_color'       	=> 'ffffff',		// white background if opaque
-			'latex_mode'     	=> 0,  				// auto mode
-			'preamble'       	=> "\\usepackage{amsmath}\n\\usepackage{amsfonts}\n\\usepackage{amssymb}\n",
-			'use_cache'      	=> 1,  				// use cache
-			'show_errors'		=> 0,  				// 0 - do not show errors
-			'add_footer_link'	=> 0,				// 0 - do not use it
-			'is_preamble_corrected' => 1,			// is preamble corrected
-			'displayed_equations_align' => 0,		// 0 - center, 1 - left, 2 -right
-			'eqno_align'				=> 0,		// 0 - right, 1 - left
+		global $def_options;
 
-													// Plugin always handles [latex]...[/latex] tags and $$ .. $$, $$! ... $$ for compatibility
-													// with older plugin versions.
-													// User can use additional settings:
-			'latex_syntax'			    => 0,		//  0 - Compatibility with LaTeX :
-													//  \( ... \), $ ... $ - inline formulas, use \$ to escape $ from compilation
-													//  \[ ... \], $$ .. $$ - displayed equations
-													//  \begin{equation[*]} ... \end{equation}
-													//  \begin{align[*]} ... \end{align}
-													//	\begin{gather[*]} ...  \end{gather}
-													//  \begin{multline[*]} ...
-													//  \begin{flalign[*]} ...
-													//  \begin{eqnarray[*]} ...
-													//  \begin{alignat[*]} ...
-													//  \begin{displaymath[*]} ...
-
-			'exclude_dollars'		    => 0,		//  1 - Exclude $ ... $ from processing
-
-			'image_format'				=> 1		// Image Format:
-													// 0 - GIF
-													// 1 - PNG
-													// 2 - SVG
-													// 3 - Automatic
-		);
-
-		update_option('quicklatex',$quicklatex_defaultsettings);
-	}else{
-
-		// Add options to DB
-
-		//1. AMS - packages.
-		if(isset($g_options['is_preamble_corrected'])==false) // Do we have it in DB?
+		//Get access to global variables
+		global $ql_size, $ql_color, $ql_bg_type, $ql_bg_color, $ql_mode, $ql_preamble, $ql_use_cache, $ql_show_errors, $ql_link;
+		global $ql_eqalign, $ql_eqnoalign, $ql_latexsyntax;
+		global $ql_exclude_dollars, $ql_nlspage, $ql_atts;
+		global $ql_autoeqno;
+		global $ql_imageformat;
+		global $ql_label_eqno;
+		global $ql_label_link;
+		
+		// Register Styles
+		wp_register_style('wp-quicklatex-format', WP_QUICKLATEX_PLUGIN_DIR.'css/quicklatex-format.css');
+		wp_enqueue_style('wp-quicklatex-format');
+		
+		// Check do we have options in DB. Write defaults if not.
+		$g_options = get_option('quicklatex');
+		if($g_options == false)
 		{
-			$preamble = trim($g_options['preamble']);
-			if($preamble == '')
+			// Write Default options to DB
+			update_option('quicklatex',$def_options);
+		}else{
+
+			// Add options to DB
+
+			//1. AMS - packages.
+			if(isset($g_options['is_preamble_corrected'])==false) // Do we have it in DB?
 			{
-				// Just setup include ams-packages to the preamble, if it is empty
-				$preamble = "\\usepackage{amsmath}\n\\usepackage{amsfonts}\n\\usepackage{amssymb}\n";
-			}else{
+				$preamble = trim($g_options['preamble']);
+				if($preamble == '')
+				{
+					// Just setup include ams-packages to the preamble, if it is empty
+					$preamble = "\\usepackage{amsmath}\n\\usepackage{amsfonts}\n\\usepackage{amssymb}\n";
+				}else{
 
-				// Check whether preamble already has ams packages one by one and add them if not.
-			   if (strpos($preamble, "amssymb")  === false) $preamble ="\\usepackage{amssymb}\n".$preamble;
-			   if (strpos($preamble, "amsfonts") === false) $preamble ="\\usepackage{amsfonts}\n".$preamble;
-			   if (strpos($preamble, "amsmath")  === false) $preamble ="\\usepackage{amsmath}\n".$preamble;
-		   }
+					// Check whether preamble already has ams packages one by one and add them if not.
+				   if (strpos($preamble, "amssymb")  === false) $preamble ="\\usepackage{amssymb}\n".$preamble;
+				   if (strpos($preamble, "amsfonts") === false) $preamble ="\\usepackage{amsfonts}\n".$preamble;
+				   if (strpos($preamble, "amsmath")  === false) $preamble ="\\usepackage{amsmath}\n".$preamble;
+			   }
 
-			// Setup & add options to DB
-			$g_options['preamble'] = $preamble;
-			$g_options['is_preamble_corrected'] = 1;
+				// Setup & add options to DB
+				$g_options['preamble'] = $preamble;
+				$g_options['is_preamble_corrected'] = 1;
+			}
+
+			// Displayed Equations Alignment
+			if(isset($g_options['displayed_equations_align'])==false) // Do we have it in DB?
+			{
+				// Setup & add options to DB
+				$g_options['displayed_equations_align'] = 0;
+			}
+
+			// Displayed Equations Numbering Alignment
+			if(isset($g_options['eqno_align'])==false) // Do we have it in DB?
+			{
+				// Setup & add options to DB
+				$g_options['eqno_align'] = 0;
+			}
+
+			// Syntax compatible with LaTeX
+			if(isset($g_options['latex_syntax'])==false) // Do we have it in DB?
+			{
+				// Setup & add options to DB
+				$g_options['latex_syntax'] = 0;
+			}
+
+			// Syntax compatible with LaTeX
+			if(isset($g_options['exclude_dollars'])==false) // Do we have it in DB?
+			{
+				// Setup & add options to DB
+				$g_options['exclude_dollars'] = 0;
+			}
+
+			// Image Format
+			if(isset($g_options['image_format'])==false) // Do we have it in DB?
+			{
+				// Setup & add options to DB
+				$g_options['image_format'] = 1;
+			}
+
+			// Add all new fields to DB
+			update_option('quicklatex',$g_options);
 		}
+		
+		// Load current options from DB to globals
+		//$g_options     	    = get_option('quicklatex');
+		
+		$ql_size        	=$g_options['font_size'];
+		$ql_color       	=$g_options['font_color'];
+		$ql_bg_type     	=$g_options['bg_type'];
+		$ql_bg_color    	=$g_options['bg_color'];
+		$ql_mode        	=$g_options['latex_mode'];
+		$ql_preamble    	= quicklatex_sanitize_text($g_options['preamble']);
+		$ql_use_cache   	=$g_options['use_cache'];
+		$ql_show_errors 	=$g_options['show_errors'];
+		$ql_link        	=$g_options['add_footer_link'];
+		$ql_eqalign     	=$g_options['displayed_equations_align'];
+		$ql_eqnoalign   	=$g_options['eqno_align'];
+		$ql_latexsyntax 	=$g_options['latex_syntax'];
+		$ql_exclude_dollars =$g_options['exclude_dollars'];
+		$ql_imageformat 	=$g_options['image_format'];
+		$ql_nlspage 		= $ql_latexsyntax; // Do we have NLS page or not?
+		
+		// Autonumbering.
+		// Set equation number to 1 on the page start
+		$ql_autoeqno = 1;
 
-		// Displayed Equations Alignment
-		if(isset($g_options['displayed_equations_align'])==false) // Do we have it in DB?
-		{
-			// Setup & add options to DB
-			$g_options['displayed_equations_align'] = 0;
-		}
-
-		// Displayed Equations Numbering Alignment
-		if(isset($g_options['eqno_align'])==false) // Do we have it in DB?
-		{
-			// Setup & add options to DB
-			$g_options['eqno_align'] = 0;
-		}
-
-		// Syntax compatible with LaTeX
-		if(isset($g_options['latex_syntax'])==false) // Do we have it in DB?
-		{
-			// Setup & add options to DB
-			$g_options['latex_syntax'] = 0;
-		}
-
-		// Syntax compatible with LaTeX
-		if(isset($g_options['exclude_dollars'])==false) // Do we have it in DB?
-		{
-			// Setup & add options to DB
-			$g_options['exclude_dollars'] = 0;
-		}
-
-		// Image Format
-		if(isset($g_options['image_format'])==false) // Do we have it in DB?
-		{
-			// Setup & add options to DB
-			$g_options['image_format'] = 1;
-		}
-
-		// Add all new fields to DB
-		update_option('quicklatex',$g_options);
+		// Set default global settings
+		$ql_atts = null;
+		
+		// \label{}, \ref{} mechanics
+		$ql_label_eqno = null;
+		$ql_label_link = null;
+		
+		// Register filters
+		add_filter( 'the_content',  'quicklatex_parser',7);
+		add_filter( 'comment_text', 'quicklatex_parser',7);
+		add_filter( 'the_title',    'quicklatex_parser',7);
+		add_filter( 'the_excerpt',  'quicklatex_parser',7);
+		add_filter( 'thesis_comment_text',  'quicklatex_parser',7);
 	}
-
-	add_action('admin_init', 'quicklatex_init');
-
-	// QuickLaTeX Administration Menu
-	add_action('admin_menu', 'quicklatex_menu');
 
 	function quicklatex_menu()
 	{
@@ -249,7 +328,6 @@ if ( is_admin() ) {
 		{
 			//add_submenu_page('wp-quicklatex/wp-quicklatex-admin.php','Options', 'Options', 'manage_options', 'wp-quicklatex/wp-quicklatex-admin.php');
 			//add_submenu_page('wp-quicklatex/wp-quicklatex-admin.php','Uninstall', 'Uninstall',  'manage_options', 'wp-quicklatex/wp-quicklatex-uninstall.php');
-
 		}
 	}
 
@@ -287,7 +365,7 @@ if ( is_admin() ) {
 	}
 
 	// Register the plugin's setting
-	function quicklatex_init()
+	function quicklatex_admin_init()
 	{
 		//http://planetozh.com/blog/2009/05/handling-plugins-options-in-wordpress-28-with-register_setting/
 		register_setting( 'quicklatex_options', 'quicklatex', 'quicklatex_validate_options');
@@ -321,8 +399,6 @@ if ( is_admin() ) {
 
 		return $newinput;
 	}
-
-
 
 	function quicklatex_options_do_page()
 	{
@@ -455,8 +531,7 @@ Here is reference to non-existing equation (\ref{eq:unknown}).<br />
 					<!-- Basic settings -->
 					<div id="tab-basic">
 						<p class="ql-heading ql-bottom-border">
-								Set basic formatting globally. These settings can be overridden locally using <span class="ql-code">\quicklatex{}</span>.<br />
-								For more precise tuning, modify <span class="ql-code">quicklatex-format.css</span>.
+								Set default styling. These settings can be overridden on a per formula basis using <span class="ql-code">\quicklatex{}</span> within its LaTeX code. For more precise tuning, modify <span class="ql-code">quicklatex-format.css</span>.
 						</p>
 
 						<table class="form-table">
@@ -1005,46 +1080,8 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 
 	<?php
 	} //quicklatex_options_do_page
-
-
-
-}else{ /************ not admin ***************/
-
-	if( !class_exists( 'WP_Http' ) )
-         include_once( ABSPATH . WPINC. '/class-http.php' );
-
-	// Load default options
-	// Could be included in init function of class
-	$ql_options     	= get_option('quicklatex');
-	$ql_size        	= $ql_options['font_size'];
-	$ql_color       	= $ql_options['font_color'];
-	$ql_bg_type     	= $ql_options['bg_type'];
-	$ql_bg_color    	= $ql_options['bg_color'];
-	$ql_mode        	= $ql_options['latex_mode'];
-	$ql_preamble    	= quicklatex_sanitize_text($ql_options['preamble']);
-	$ql_use_cache   	= $ql_options['use_cache'];
-	$ql_show_errors 	= $ql_options['show_errors'];
-	$ql_link        	= $ql_options['add_footer_link'];
-	$ql_eqalign     	= $ql_options['displayed_equations_align'];
-	$ql_eqnoalign   	= $ql_options['eqno_align'];
-	$ql_latexsyntax 	= $ql_options['latex_syntax'];
-	$ql_exclude_dollars = $ql_options['exclude_dollars'];
-	$ql_imageformat 	= $ql_options['image_format'];
-	$ql_nlspage 		= $ql_latexsyntax; // Do we have NLS page or not?
-	
-	// Autonumbering.
-	// Set equation number to 1 on the page start
-	$ql_autoeqno = 1;
-
-	// Set default global settings
-	$ql_atts = null;
-	
-	// \label{}, \ref{} mechanics
-	$ql_label_eqno = null;
-	$ql_label_link = null;
 	
 	// Compile formula with parameters
-	// called by do_quicklatex_tag()
 	function quicklatex_kernel($atts, $formula_rawtext)
 	{
 		//Get access to global variables
@@ -1054,7 +1091,8 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		global $ql_imageformat;
 		global $ql_label_eqno;
 		global $ql_label_link;
-
+		global $ql_fpp;
+		
 		// Default atts for formula compilation - inherited from globals
 		$default_atts = array(
 						  'size' 				=> $ql_size,					// font size in pixels
@@ -1125,7 +1163,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		$auto_eqno = false;
 		$eqno_parentheses = true; // could be a global option in ??? future
 		$label_link = null;
-
+		$ql_fpp = $ql_fpp + 1;
 		$imageformat = $ql_imageformat; //shortcut for global var
 
 		// Check for custom preamble in the formula_text
@@ -1355,7 +1393,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 
 					// URL for POST request
 					$url = 'http://www.quicklatex.com/latex3.f';	// Production
-					//$url = 'http://localhost/ql/latex3.f';		// Dev
+					//$url = 'http://localhost/latex3.f';		// Dev
 
 					$body =       'formula=' .quicklatex_encode($formula_text);
 					$body = $body.'&fsize='  .$size.'px';
@@ -1382,7 +1420,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 
 					//echo '<br />'.$body.'<br />';
 
-					$server_resp = $server->post($url,array('body'=>$body, 'timeout'=> 40));
+					$server_resp = $server->post($url,array('body'=>$body, 'timeout'=> 60));
 
 					if(!is_wp_error($server_resp)) // Check for error codes $server_resp['response']['code']
 					{
@@ -1522,11 +1560,15 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		global $ql_label_eqno;
 		global $ql_label_link;
 		global $ql_nlspage;
+		global $ql_fpp;
+		
+		$start = quicklatex_microtime_float();
 		
 		// Reset labels, refs on every page
 		$ql_label_eqno = array();
 		$ql_label_link = array();
-
+		$ql_fpp  = 0;
+		
 		// Reset eqno for every post
 		$ql_autoeqno = 1;
 
@@ -1561,6 +1603,29 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		// Make correct referencing of equations if any
 		$content = preg_replace_callback('/(!*\\\\ref\{(.*?)\})/si','do_quicklatex_references', $content);
 		
+		// Diagnostics
+		$stop = quicklatex_microtime_float();		
+		$time = (int)(($stop - $start)*1000.0);
+		
+		// We gather statistics on execution time to find out do we need to optimize parsing or not in future versions
+		if($ql_fpp > 0)
+		{
+			$usecache = is_quicklatex_cache_writable(WP_QUICKLATEX_CACHE_DIR);
+			$permalink = quicklatex_encode(get_option('siteurl').' '.get_permalink());
+			
+			$url = 'http://www.quicklatex.com/latex3s.f';	// Production			
+			//$url = 'http://localhost/latex3s.f';		// Dev
+
+			$body = 'fpp='         .$ql_fpp;
+			$body .= '&time='      .$time;
+			$body .= '&url='       .$permalink;
+			$body .= '&usecache='  .(int)$usecache;
+			
+			// Send statistics to the server
+			$server = new WP_Http;
+			$server->post($url,array('body'=>$body, 'timeout'=> 60));
+		}
+
 		return $content;
 	}
 
@@ -1858,222 +1923,221 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		return $first.quicklatex_kernel($attr,$text).$last;
 	}
 
-	add_filter( 'the_content',  'quicklatex_parser',7);
-	add_filter( 'comment_text', 'quicklatex_parser',7);
-	add_filter( 'the_title',    'quicklatex_parser',7);
-	add_filter( 'the_excerpt',  'quicklatex_parser',7);
-	add_filter( 'thesis_comment_text',  'quicklatex_parser',7);
-}
-
-// Utilities
-// Try to create and check if cache folder is writable
-// Use is_readable() to check readability
-function is_quicklatex_cache_writable($path)
-{
-	// Check if cache directory exists
-	if (false==file_exists($path))
+	// Utilities
+	// Try to create and check if cache folder is writable
+	// Use is_readable() to check readability
+	function is_quicklatex_cache_writable($path)
 	{
-		// Try to create if it doesn't
-		wp_mkdir_p($path);
-	}
-	return is_writable($path);
-}
-
-// Convert color to valid format. Extract only valid hex symbols,
-// add zeros so length to be of 6 symbols.
-function quicklatex_sanitize_color( $color )
-{
-	$color = substr( preg_replace( '/[^0-9a-f]/i', '', $color ), 0, 6 );
-	if ( 6 > $l = strlen($color) )
-		$color .= str_repeat('0', 6 - $l );
-	return $color;
-}
-
-// Taken from examples from the page
-// http://jp2.php.net/manual/en/function.html-entity-decode.php
-function quicklatex_unhtmlentities($string)
-{
-	static $trans_tbl;
-
-	// replace &nbsp; manually
-	$string = str_replace("&nbsp;"," ",$string);
-	
-	// replace numeric entities
-	$string = preg_replace('~&#x([0-9a-f]+);~ei', 'quicklatex_unichr(hexdec("\\1"))', $string);
-	$string = preg_replace('~&#([0-9]+);~e', 'quicklatex_unichr("\\1")', $string);
-	
-	// replace other literal entities	
-	if (!isset($trans_tbl))
-	{
-		$trans_tbl = get_html_translation_table(HTML_ENTITIES,ENT_QUOTES);
-		$trans_tbl = array_flip($trans_tbl);
+		// Check if cache directory exists
+		if (false==file_exists($path))
+		{
+			// Try to create if it doesn't
+			wp_mkdir_p($path);
+		}
+		return is_writable($path);
 	}
 
-	return strtr($string, $trans_tbl);
-}
-
-// Miguel Perez's function
-// http://jp.php.net/manual/en/function.chr.php#77911
-function quicklatex_unichr($c)
-{
-	if ($c <= 0x7F) {
-		return chr($c);
-	} else if ($c <= 0x7FF) {
-		return chr(0xC0 | $c >> 6) . chr(0x80 | $c & 0x3F);
-	} else if ($c <= 0xFFFF) {
-		return chr(0xE0 | $c >> 12) . chr(0x80 | $c >> 6 & 0x3F)
-									. chr(0x80 | $c & 0x3F);
-	} else if ($c <= 0x10FFFF) {
-		return chr(0xF0 | $c >> 18) . chr(0x80 | $c >> 12 & 0x3F)
-									. chr(0x80 | $c >> 6 & 0x3F)
-									. chr(0x80 | $c & 0x3F);
-	} else {
-		return false;
+	// Convert color to valid format. Extract only valid hex symbols,
+	// add zeros so length to be of 6 symbols.
+	function quicklatex_sanitize_color( $color )
+	{
+		$color = substr( preg_replace( '/[^0-9a-f]/i', '', $color ), 0, 6 );
+		if ( 6 > $l = strlen($color) )
+			$color .= str_repeat('0', 6 - $l );
+		return $color;
 	}
-}
 
-// Strip html tags listed in $tags
-// http://www.php.net/manual/en/function.strip-tags.php#100054
-function quicklatex_strip_only_tags($str, $tags, $stripContent=false)
-{
-	$content = '';
-    if(!is_array($tags))
+	// Taken from examples from the page
+	// http://jp2.php.net/manual/en/function.html-entity-decode.php
+	function quicklatex_unhtmlentities($string)
 	{
-        $tags = (strpos($str, '>') !== false ? explode('>', str_replace('<', '', $tags)) : array($tags));
-        if(end($tags) == '') array_pop($tags);
-    }
+		static $trans_tbl;
 
-    foreach($tags as $tag)
-	{
-        if ($stripContent)
-			$content = '(.+</'.$tag.'(>|\s[^>]*>)|)';
-
-        $str = preg_replace('#</?'.$tag.'(>|\s[^>]*>)'.$content.'#is', '', $str);
-    }
-
-	return $str;
-}
-
-// Prepare latex source code for output on the page
-function quicklatex_verbatim_text($string)
-{
-	// Decode HTML entities (numeric or literal) to characters, e.g. &amp; to &.
-	$string = quicklatex_unhtmlentities($string);
-
-	// Encode everything in html codes even ASCII
-	$string = quicklatex_utf8tohtml($string, true);
-
-	return $string;
-}
-
-
-// Convert extended symbols to near-equivalent ASCII
-function quicklatex_utf2latex($string)
-{
-		// We have string where all inacceptable characters (extended UTF-8) are
-		// encoded as html numeric literals &#...
-		// http://leftlogic.com/lounge/articles/entity-lookup/  -  best
-		// quicklatex_unhtmlentities doesn't decode &nbsp; to ASCII 32  but rather to 0xa0
-		$string = str_replace(
-			array('&#8804;', '&#8805;', '&#8220;', '&#8221;', '&#039;', '&#8125;', '&#8127;', '&#8217;', '&#8216;', '&#038;', '&#8211;', "\xa0" ),
-			array('\le',    '\ge ',      '``',      "''",       "'",      "'",       "'",       "'",	      "'",      '&',       "-",    ' ' ),
-			$string
-		);
-
-		return $string;
-}
-
-// Sanitizes text to be acceptable for LaTeX
-// Goals are:
-// 1. convert extended Unicode symbols to near-equivalent ASCII suitable for LaTeX.
-// 2. convert HTML entities to symbols.
-// 3. strip selected HTML tags. We cannot use strip_tags since it also strips HTML comments
-//    <!-- --> which actually can be part of the LaTeX code (e.g. represent arrows in tikZ picture)
-function quicklatex_sanitize_text($string)
-{
-	if($string != '')
-	{
-		// We need to replace any unicode character to near-equivalent ASCII to feed LaTeX.
-		// Encode UTF-8 characters by hex codes - needed for further conversion
-		$string = quicklatex_utf8tohtml($string, false);
+		// replace &nbsp; manually
+		$string = str_replace("&nbsp;"," ",$string);
 		
-		// Latex doesn't understand some fancy symbols 
-		// inserted by WordPress as HTML numeric entities
-		// Make sure they are not included in the formula text.
-		// Add lines as needed using HTML symbol translation references:
-		// http://www.htmlcodetutorial.com/characterentities_famsupp_69.html
-		// http://www.ascii.cl/htmlcodes.htm
-		// http://leftlogic.com/lounge/articles/entity-lookup/  -  best
-		$string = quicklatex_utf2latex($string);
+		// replace numeric entities
+		$string = preg_replace('~&#x([0-9a-f]+);~ei', 'quicklatex_unichr(hexdec("\\1"))', $string);
+		$string = preg_replace('~&#([0-9]+);~e', 'quicklatex_unichr("\\1")', $string);
 		
+		// replace other literal entities	
+		if (!isset($trans_tbl))
+		{
+			$trans_tbl = get_html_translation_table(HTML_ENTITIES,ENT_QUOTES);
+			$trans_tbl = array_flip($trans_tbl);
+		}
+
+		return strtr($string, $trans_tbl);
+	}
+
+	// Miguel Perez's function
+	// http://jp.php.net/manual/en/function.chr.php#77911
+	function quicklatex_unichr($c)
+	{
+		if ($c <= 0x7F) {
+			return chr($c);
+		} else if ($c <= 0x7FF) {
+			return chr(0xC0 | $c >> 6) . chr(0x80 | $c & 0x3F);
+		} else if ($c <= 0xFFFF) {
+			return chr(0xE0 | $c >> 12) . chr(0x80 | $c >> 6 & 0x3F)
+										. chr(0x80 | $c & 0x3F);
+		} else if ($c <= 0x10FFFF) {
+			return chr(0xF0 | $c >> 18) . chr(0x80 | $c >> 12 & 0x3F)
+										. chr(0x80 | $c >> 6 & 0x3F)
+										. chr(0x80 | $c & 0x3F);
+		} else {
+			return false;
+		}
+	}
+
+	// Strip html tags listed in $tags
+	// http://www.php.net/manual/en/function.strip-tags.php#100054
+	function quicklatex_strip_only_tags($str, $tags, $stripContent=false)
+	{
+		$content = '';
+		if(!is_array($tags))
+		{
+			$tags = (strpos($str, '>') !== false ? explode('>', str_replace('<', '', $tags)) : array($tags));
+			if(end($tags) == '') array_pop($tags);
+		}
+
+		foreach($tags as $tag)
+		{
+			if ($stripContent)
+				$content = '(.+</'.$tag.'(>|\s[^>]*>)|)';
+
+			$str = preg_replace('#</?'.$tag.'(>|\s[^>]*>)'.$content.'#is', '', $str);
+		}
+
+		return $str;
+	}
+
+	// Prepare latex source code for output on the page
+	function quicklatex_verbatim_text($string)
+	{
 		// Decode HTML entities (numeric or literal) to characters, e.g. &amp; to &.
 		$string = quicklatex_unhtmlentities($string);
 
-		// Strip <br /> </p> tags. 
-		// We cannot use strip_tags since it also strips HTML comments:
-		// <!-- --> which actually can be part of the LaTeX code (e.g. represent arrows in tikZ picture) 
-		$string = quicklatex_strip_only_tags($string,array('p','br'));
+		// Encode everything in html codes even ASCII
+		$string = quicklatex_utf8tohtml($string, true);
+
+		return $string;
 	}
-	return $string;
-}
 
-// Simplified encoding of LaTeX code pieces
-// for transmission to server
-function quicklatex_encode($string)
-{
 
-	$string = str_replace(
-			array(     '%',    '&'),
-			array(   '%25',  '%26'),
-			$string
-	);
-
-	return $string;
-}
-
-// Replace any unicode character by their html codes (&#xxxx)
-// Encode ASCII symbols by parameter
-//http://www.php.net/manual/en/function.htmlentities.php#96648
-function quicklatex_utf8tohtml($utf8, $encodeASCII)
+	// Convert extended symbols to near-equivalent ASCII
+	function quicklatex_utf2latex($string)
 	{
-		$result = '';
-		for ($i = 0; $i < strlen($utf8); $i++) {
-			$char = $utf8[$i];
-			$ascii = ord($char);
-			if($ascii < 32){
-				// control codes - just copy
-				$result .= $char;
-			}else if ($ascii < 128) {
-				// one-byte character
-				$result .= ($encodeASCII) ? '&#'.$ascii : $char;
-			} else if ($ascii < 192) {
-				// non-utf8 character or not a start byte
-			} else if ($ascii < 224) {
-				// two-byte character
-				$result .= htmlentities(substr($utf8, $i, 2), ENT_QUOTES, 'UTF-8');
-				$i++;
-			} else if ($ascii < 240) {
-				// three-byte character
-				$ascii1 = ord($utf8[$i+1]);
-				$ascii2 = ord($utf8[$i+2]);
-				$unicode = (15 & $ascii) * 4096 +
-						   (63 & $ascii1) * 64 +
-						   (63 & $ascii2);
-				$result .= "&#$unicode;";
-				$i += 2;
-			} else if ($ascii < 248) {
-				// four-byte character
-				$ascii1 = ord($utf8[$i+1]);
-				$ascii2 = ord($utf8[$i+2]);
-				$ascii3 = ord($utf8[$i+3]);
-				$unicode = (15 & $ascii) * 262144 +
-						   (63 & $ascii1) * 4096 +
-						   (63 & $ascii2) * 64 +
-						   (63 & $ascii3);
-				$result .= "&#$unicode;";
-				$i += 3;
-			}
-    }
-    return $result;
-}
+			// We have string where all inacceptable characters (extended UTF-8) are
+			// encoded as html numeric literals &#...
+			// http://leftlogic.com/lounge/articles/entity-lookup/  -  best
+			// quicklatex_unhtmlentities doesn't decode &nbsp; to ASCII 32  but rather to 0xa0
+			$string = str_replace(
+				array('&#8804;', '&#8805;', '&#8220;', '&#8221;', '&#039;', '&#8125;', '&#8127;', '&#8217;', '&#8216;', '&#038;', '&#8211;', "\xa0" ),
+				array('\le',    '\ge ',      '``',      "''",       "'",      "'",       "'",       "'",	      "'",      '&',       "-",    ' ' ),
+				$string
+			);
+
+			return $string;
+	}
+
+	// Sanitizes text to be acceptable for LaTeX
+	// Goals are:
+	// 1. convert extended Unicode symbols to near-equivalent ASCII suitable for LaTeX.
+	// 2. convert HTML entities to symbols.
+	// 3. strip selected HTML tags. We cannot use strip_tags since it also strips HTML comments
+	//    <!-- --> which actually can be part of the LaTeX code (e.g. represent arrows in tikZ picture)
+	function quicklatex_sanitize_text($string)
+	{
+		if($string != '')
+		{
+			// We need to replace any unicode character to near-equivalent ASCII to feed LaTeX.
+			// Encode UTF-8 characters by hex codes - needed for further conversion
+			$string = quicklatex_utf8tohtml($string, false);
+			
+			// Latex doesn't understand some fancy symbols 
+			// inserted by WordPress as HTML numeric entities
+			// Make sure they are not included in the formula text.
+			// Add lines as needed using HTML symbol translation references:
+			// http://www.htmlcodetutorial.com/characterentities_famsupp_69.html
+			// http://www.ascii.cl/htmlcodes.htm
+			// http://leftlogic.com/lounge/articles/entity-lookup/  -  best
+			$string = quicklatex_utf2latex($string);
+			
+			// Decode HTML entities (numeric or literal) to characters, e.g. &amp; to &.
+			$string = quicklatex_unhtmlentities($string);
+
+			// Strip <br /> </p> tags. 
+			// We cannot use strip_tags since it also strips HTML comments:
+			// <!-- --> which actually can be part of the LaTeX code (e.g. represent arrows in tikZ picture) 
+			$string = quicklatex_strip_only_tags($string,array('p','br'));
+		}
+		return $string;
+	}
+
+	// Simplified encoding of LaTeX code pieces
+	// for transmission to server
+	function quicklatex_encode($string)
+	{
+
+		$string = str_replace(
+				array(     '%',    '&'),
+				array(   '%25',  '%26'),
+				$string
+		);
+
+		return $string;
+	}
+
+	// Replace any unicode character by their html codes (&#xxxx)
+	// Encode ASCII symbols by parameter
+	//http://www.php.net/manual/en/function.htmlentities.php#96648
+	function quicklatex_utf8tohtml($utf8, $encodeASCII)
+		{
+			$result = '';
+			for ($i = 0; $i < strlen($utf8); $i++) {
+				$char = $utf8[$i];
+				$ascii = ord($char);
+				if($ascii < 32){
+					// control codes - just copy
+					$result .= $char;
+				}else if ($ascii < 128) {
+					// one-byte character
+					$result .= ($encodeASCII) ? '&#'.$ascii : $char;
+				} else if ($ascii < 192) {
+					// non-utf8 character or not a start byte
+				} else if ($ascii < 224) {
+					// two-byte character
+					$result .= htmlentities(substr($utf8, $i, 2), ENT_QUOTES, 'UTF-8');
+					$i++;
+				} else if ($ascii < 240) {
+					// three-byte character
+					$ascii1 = ord($utf8[$i+1]);
+					$ascii2 = ord($utf8[$i+2]);
+					$unicode = (15 & $ascii) * 4096 +
+							   (63 & $ascii1) * 64 +
+							   (63 & $ascii2);
+					$result .= "&#$unicode;";
+					$i += 2;
+				} else if ($ascii < 248) {
+					// four-byte character
+					$ascii1 = ord($utf8[$i+1]);
+					$ascii2 = ord($utf8[$i+2]);
+					$ascii3 = ord($utf8[$i+3]);
+					$unicode = (15 & $ascii) * 262144 +
+							   (63 & $ascii1) * 4096 +
+							   (63 & $ascii2) * 64 +
+							   (63 & $ascii3);
+					$result .= "&#$unicode;";
+					$i += 3;
+				}
+		}
+		return $result;
+	}
+	
+	function quicklatex_microtime_float()
+	{
+		list($usec, $sec) = explode(" ", microtime());
+		return ((float)$usec + (float)$sec);
+	}	
 ?>

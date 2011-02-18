@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.4
+Stable tag: 3.7.5
 Requires at least: 2.8
 Tested up to: 3.0.5
 
@@ -18,6 +18,7 @@ Insert formulas & graphics in the posts and comments using native LaTeX shorthan
 1.  Equation hyper-referencing by standard LaTeX rules with `\label{}`, `\ref{}`.
 1.  Custom LaTeX document preamble, allowing added <code>\usepackage{}</code> and <code>\newcommand{}</code>.
 1.  <code>TikZ</code> and <code>pgfplots</code> graphics package support.
+1.  Preview formulas in comments before publishing. Additionally [AJAX Comment Preview](http://blogwaffe.com/ajax-comment-preview/) plugin should be installed to enable this feature.
 1.  Correct vertical positioning of inline formulas relative to baseline of surrounding text. Say “NO” to jumpy equations produced by other plugins!
 1.  Meaningful error messages for mistakes in LaTeX code.
 1.  Precise font properties tuning: <code>size, text and background color</code>. 
@@ -73,8 +74,11 @@ I'll do my best to help you.
 
 == Change Log ==
 
+= 3.7.5 =
+* Added compatibility with [AJAX Comment Preview](http://blogwaffe.com/ajax-comment-preview/) plugin to allow formulas preview in comments before publishing. Just update QuickLaTeX to 3.7.5 and install AJAX Comment Preview. You can test this feature on [any post on my site ](http://www.holoborodko.com/pavel/).
+
 = 3.7.4 =
-* Added facility to escape `[latexpage]` tag from processing. Use `!` just before it.
+* Use `!` before `[latexpage]` tag to escape it from processing. 
 * Disabled `$$ .. $$` processing on non-[latexpage] pages.
 
 = 3.7.3 =
