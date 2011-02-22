@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.5
+Stable tag: 3.7.6
 Requires at least: 2.8
 Tested up to: 3.0.5
 
@@ -73,6 +73,9 @@ Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoboro
 I'll do my best to help you.
 
 == Change Log ==
+
+= 3.7.6 =
+* Fixed sanitization of LaTeX source code to be placed in `alt` attribute. Now QuickLaTeX markup passes HTML validation without errors/warnings.
 
 = 3.7.5 =
 * Added compatibility with [AJAX Comment Preview](http://blogwaffe.com/ajax-comment-preview/) plugin to allow formulas preview in comments before publishing. Just update QuickLaTeX to 3.7.5 and install AJAX Comment Preview. You can test this feature on [any post on my site ](http://www.holoborodko.com/pavel/).

@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Insert formulas & graphics in the posts and comments using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info. 
-		Version: 3.7.5
+		Version: 3.7.6
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -796,7 +796,7 @@ Here is reference to non-existing equation (\ref{eq:unknown}).<br />
 					<!-- About -->
 					<div id="tab-about">
 <p class="ql-about">
-QuickLaTeX is free under linkware license. Which means that service can be used (a) on non-commercial websites (b) with visible and direct backlink to <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a>.
+QuickLaTeX is free under linkware license. Which means service can be used (a) on non-commercial websites (b) with visible and direct backlink to <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a>.
 </p>
 
 <p class="ql-about">
@@ -1488,7 +1488,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 								// Inline formula
 								// Apply ql-inline-formula style class, setup correct vertical alignment
 
-								$out_str  = "<img src=\"$image_url\" class=\"ql-img-inline-formula\" alt=\"".quicklatex_verbatim_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
+								$out_str  = "<img src=\"$image_url\" class=\"ql-img-inline-formula\" alt=\"".quicklatex_alt_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
 								
 								$out_str .= " style=\"vertical-align: ".-$image_align."px;\"/>";								
 								
@@ -1528,7 +1528,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 								}
 								
 								// Place image on the page
-								$out_str .= "<img src=\"$image_url\""."class=\"ql-img-displayed-equation\" alt=\"".quicklatex_verbatim_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
+								$out_str .= "<img src=\"$image_url\""."class=\"ql-img-displayed-equation\" alt=\"".quicklatex_alt_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
 
 								$out_str .= "/>";
 
@@ -2012,6 +2012,19 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 		return $str;
 	}
 
+	// Prepare latex source code for alt 
+	// Remove new line
+	function quicklatex_alt_text($string)
+	{
+		$string = quicklatex_verbatim_text($string);
+		
+		// Remove all newlines since Wordpress replaces them with <br /> which breaks 
+		// ALT attribute validation
+		$string = preg_replace("/(\r?\n)/", " ", $string);		
+		
+		return $string;
+	}
+
 	// Prepare latex source code for output on the page
 	function quicklatex_verbatim_text($string)
 	{
@@ -2020,7 +2033,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 
 		// Encode everything in html codes even ASCII
 		$string = quicklatex_utf8tohtml($string, true);
-
+		
 		return $string;
 	}
 
@@ -2103,7 +2116,7 @@ QuickLaTeX is free under linkware license. Which means that service can be used 
 					$result .= $char;
 				}else if ($ascii < 128) {
 					// one-byte character
-					$result .= ($encodeASCII) ? '&#'.$ascii : $char;
+					$result .= ($encodeASCII) ? '&#'.$ascii.';' : $char;
 				} else if ($ascii < 192) {
 					// non-utf8 character or not a start byte
 				} else if ($ascii < 224) {
