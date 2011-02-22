@@ -60,7 +60,7 @@ WP-QuickLaTeX stores expression images in the folder `wp-content/ql-cache`, grea
 = How do I add LaTeX to my posts? =
 There are three possible ways:
 
-* Place <code>[latexpage]</code> somewhere on the page, post, or comment. Place LaTeX expression surrounded by <code>$..$, \[..\]</code> or a display environment <code>\begin(equation}..\end{equation}</code> (or <code>align, gather, multiline, flalign, alignatz</code>). 
+* Place <code>[latexpage]</code> somewhere on the page, post, or comment. Place LaTeX expression surrounded by <code>$..$, \[..\]</code> or a display environment <code>\begin(equation}..\end{equation}</code> (or <code>align, gather, multiline, flalign, alignat</code>). 
 * Enable 'Use LaTeX Syntax Sitewide'; then it is not necessary to place <code>[latexpage]</code>.
 * Wrap formulas with <code>[latex] ... [/latex]</code> (this gives compatibility with previously-written "legacy" pages). 
 
