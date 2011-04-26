@@ -4,7 +4,7 @@ Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
 Stable tag: 3.7.6
 Requires at least: 2.8
-Tested up to: 3.1
+Tested up to: 3.1.1
 
 Insert math in posts/comments using native LaTeX syntax. Inline formulas, displayed equations with numbering, AMS-LaTeX, TikZ, custom LaTeX preamble.
 
