@@ -28,7 +28,7 @@ Insert formulas & graphics in the posts and comments using native LaTeX shorthan
 1.  Administrative settings page for setting global parameters; AJAX-ified.
 
 Just place LaTeX math expressions into your text and enable QuickLaTeX on the page by <code>[latexpage]</code> command.
-WP QuickLaTeX will convert them to high-quality images and embed them into post. Inline formulas will be properly aligned with the text.
+WP QuickLaTeX will convert them to high-quality images and embed into post. Inline formulas will be properly aligned with the text.
 Displayed equations will be auto-numbered by LaTeX rules.
 To see plugin in action please visit math-pages on my blog, e.g. [Central Differences](http://www.holoborodko.com/pavel/numerical-methods/numerical-derivative/central-differences/),
 [Cubature formulas for the unit disk](http://www.holoborodko.com/pavel/numerical-methods/numerical-integration/cubature-formulas-for-the-unit-disk/), [Smooth noise robust differentiators](http://www.holoborodko.com/pavel/numerical-methods/numerical-derivative/smooth-low-noise-differentiators/), etc.
