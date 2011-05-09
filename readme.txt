@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.6
+Stable tag: 3.7.7
 Requires at least: 2.8
 Tested up to: 3.1.2
 
@@ -73,6 +73,12 @@ Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoboro
 I'll do my best to help you.
 
 == Change Log ==
+
+= 3.7.7 =
+* Improved rendering of TikZ pictures with overlays.
+* Improved support of chemistry-related packages: ChemFig, myChemistry.
+* Server has been updated to include newest packages and changes fron CTAN.
+* Fixed few minor bugs in plugin, code clean up.
 
 = 3.7.6 =
 * Fixed sanitization of LaTeX source code to be placed in `alt` attribute. Now QuickLaTeX markup passes HTML validation without errors/warnings.

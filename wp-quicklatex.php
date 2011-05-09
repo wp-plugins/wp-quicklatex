@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Insert formulas & graphics in the posts and comments using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info. 
-		Version: 3.7.6
+		Version: 3.7.7
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -302,6 +302,7 @@
 		add_filter( 'the_title',    'quicklatex_parser',7);
 		add_filter( 'the_excerpt',  'quicklatex_parser',7);
 		add_filter( 'thesis_comment_text',  'quicklatex_parser',7);
+		add_filter( 'plugin_action_links',  'quicklatex_action_links', 10, 2);		
 	}
 
 	function quicklatex_menu()
@@ -309,12 +310,11 @@
 		if (function_exists('add_menu_page'))
 		{
 			$page = add_menu_page(
-						  'QuickLaTeX', 									//$page_title
-						  'QuickLaTeX', 									//$menu_title
-						  'manage_options',							    	//$capability, http://codex.wordpress.org/Roles_and_Capabilities
-						  '',
-						  //'wp-quicklatex/wp-quicklatex-admin.php',       	//$menu_slug - > php file which handles admin page
-						  'quicklatex_options_do_page',						//$function, generates admin page - using now
+						  'QuickLaTeX', 									// $page_title
+						  'QuickLaTeX', 									// $menu_title
+						  'manage_options',							    	// $capability, http://codex.wordpress.org/Roles_and_Capabilities
+						  'quicklatex-settings',							// $menu_slug	
+						  'quicklatex_options_do_page',						// $function which generates admin page
 						  WP_QUICKLATEX_PLUGIN_DIR.'images/quicklatex_menu_icon.png'   //$icon_url
 						  );
 
@@ -357,6 +357,24 @@
 		wp_enqueue_style('jquery-ui', WP_QUICKLATEX_PLUGIN_DIR.'css/smoothness/jquery-ui-1.8.9.custom.css');  // KAK UI
 
     }
+
+	function quicklatex_action_links($links, $file) {
+		static $this_plugin;
+
+		if (!$this_plugin) {
+			$this_plugin = plugin_basename(__FILE__);
+		}
+
+		if ($file == $this_plugin) {
+			// The "page" query string value must be equal to the slug
+			// of the Settings admin page we defined earlier, which in
+			// this case equals "myplugin-settings".
+			$settings_link = '<a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=quicklatex-settings">Settings</a>';
+			array_unshift($links, $settings_link);
+		}
+		
+		return $links;
+	}
 
 	// Delete DB entry on uninstall
 	function uninstall_quicklatex()
@@ -838,9 +856,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 							<p class="ql-p-centered"><strong>QuickLaTeX is not just a plugin.</strong></p>
 
 							<p class="ql-p-justified">There is a custom-built <a href="http://quicklatex.com/">QuickLaTeX server</a> behind it which actually does all the dirty work. It runs 24x365 and requires constant maintenance and further development.</p>
-							<p class="ql-p-centered"><strong>QuickLaTeX service is free<br />and will remain free.</strong></p>
-							<p class="ql-p-justified">However to keep going we badly need your support, so please:</p>
-
+							<p class="ql-p-centered"><strong>To keep development and free updates coming please support us by the following:</strong></p>
 							<ul>
 								<li><a href="http://www.holoborodko.com/pavel/quicklatex/">Keep link to QuickLaTeX on your website</a></li>
 								<li><a href="http://www.holoborodko.com/pavel/quicklatex/">Write post about QuickLaTeX</a></li>
@@ -1224,7 +1240,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 			// Analyze formula for environments, figures, etc.
 
 			// Check formula & preamble for tikz/pgf environments
-			$pattern = '/(!*\\\\begin\{(tikz|pgf).*?\\\\end\{\2.*?\})/si';
+			$pattern = '/(!*\\\\begin\{(tikz|pgf|rxn).*?\\\\end\{\2.*?\})/si';
 			if(preg_match($pattern,$formula_text) || preg_match($pattern,$preamble))
 			{
 				$tikz_picture = true;
@@ -1610,20 +1626,25 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		// We gather statistics on execution time to find out do we need to optimize parsing or not in future versions
 		if($ql_fpp > 0)
 		{
-			$usecache = is_quicklatex_cache_writable(WP_QUICKLATEX_CACHE_DIR);
-			$permalink = quicklatex_encode(get_option('siteurl').' '.get_permalink());
-			
-			$url = 'http://www.quicklatex.com/latex3s.f';	// Production			
-			//$url = 'http://localhost/latex3s.f';		// Dev
+			// Do not count bots since they are not users and we are looking for user experience.
+			$agent = strtolower($_SERVER['HTTP_USER_AGENT']);
+			if(!quicklatex_is_bot($agent))
+			{
+				$usecache = is_quicklatex_cache_writable(WP_QUICKLATEX_CACHE_DIR);
+				$permalink = quicklatex_encode(get_option('siteurl').' '.get_permalink());
+				
+				$url = 'http://www.quicklatex.com/latex3s.f';	// Production			
+				//$url = 'http://localhost/latex3s.f';		// Dev
 
-			$body = 'fpp='         .$ql_fpp;
-			$body .= '&time='      .$time;
-			$body .= '&url='       .$permalink;
-			$body .= '&usecache='  .(int)$usecache;
-			
-			// Send statistics to the server
-			$server = new WP_Http;
-			$server->post($url,array('body'=>$body, 'timeout'=> 60));
+				$body = 'fpp='         .$ql_fpp;
+				$body .= '&time='      .$time;
+				$body .= '&url='       .$permalink;
+				$body .= '&usecache='  .(int)$usecache;
+				
+				// Send statistics to the server
+				$server = new WP_Http;
+				$server->post($url,array('body'=>$body, 'timeout'=> 60));
+			}
 		}
 
 		return $content;
@@ -1672,7 +1693,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		//  \begin{tikz ...
 		//  \begin{pgf ...
 		// !\begin{} ... \end{}  - verbatim source code
-		$content = preg_replace_callback('/(!*\\\\begin\{(tikz|pgf).*?\\\\end\{\2.*?\})/si','do_quicklatex_displayed_equations', $content);
+		$content = preg_replace_callback('/(!*\\\\begin\{(tikz|pgf|rxn).*?\\\\end\{\2.*?\})/si','do_quicklatex_displayed_equations', $content);
 		// Displayed math environments:
 		//  \[ ... \]
 		// !\[ ... \] - verbatim source code
@@ -2152,5 +2173,36 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 	{
 		list($usec, $sec) = explode(" ", microtime());
 		return ((float)$usec + (float)$sec);
+	}	
+	
+	// http://codytaylor.org/2009/06/detect-bots-by-parsing-the-user-agent-with-php.html
+	// returns true if the user agent is a bot
+	function quicklatex_is_bot($user_agent)
+	{
+	  //if no user agent is supplied then assume it's a bot
+	  if($user_agent == "")
+		return 1;
+
+	  //array of bot strings to check for
+	  $bot_strings = Array(  "google",     "bot",
+							"yahoo",     "spider",
+							"archiver",   "curl",
+							"python",     "nambu",
+							"twitt",     "perl",
+							"sphere",     "PEAR",
+							"java",     "wordpress",
+							"radian",     "crawl",
+							"yandex",     "eventbox",
+							"monitor",   "mechanize",
+							"facebookexternal"
+						);
+						
+	  foreach($bot_strings as $bot)
+	  {
+		if(strpos($user_agent,$bot) !== false)
+		{ return true; }
+	  }
+	  
+	  return 0;
 	}	
 ?>
