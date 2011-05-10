@@ -75,10 +75,10 @@ I'll do my best to help you.
 == Change Log ==
 
 = 3.7.7 =
+* Server has been updated to include newest packages and changes.
+* Fixed few minor bugs in plugin.
 * Improved rendering of TikZ pictures with overlays.
 * Improved support of chemistry-related packages: ChemFig, myChemistry.
-* Server has been updated to include newest packages and changes fron CTAN.
-* Fixed few minor bugs in plugin, code clean up.
 
 = 3.7.6 =
 * Fixed sanitization of LaTeX source code to be placed in `alt` attribute. Now QuickLaTeX markup passes HTML validation without errors/warnings.
