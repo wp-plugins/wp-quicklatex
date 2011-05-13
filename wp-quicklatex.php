@@ -2175,6 +2175,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		return ((float)$usec + (float)$sec);
 	}	
 	
+	// Very simple bot detection
 	// http://codytaylor.org/2009/06/detect-bots-by-parsing-the-user-agent-with-php.html
 	// returns true if the user agent is a bot
 	function quicklatex_is_bot($user_agent)
