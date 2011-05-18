@@ -1636,7 +1636,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 				$url = 'http://www.quicklatex.com/latex3s.f';	// Production			
 				//$url = 'http://localhost/latex3s.f';		// Dev
 
-				$body = 'fpp='         .$ql_fpp;
+				$body  = 'fpp='        .$ql_fpp;
 				$body .= '&time='      .$time;
 				$body .= '&url='       .$permalink;
 				$body .= '&usecache='  .(int)$usecache;
@@ -2125,7 +2125,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 
 	// Replace any unicode character by their html codes (&#xxxx)
 	// Encode ASCII symbols by parameter
-	//http://www.php.net/manual/en/function.htmlentities.php#96648
+	// http://www.php.net/manual/en/function.htmlentities.php#96648
 	function quicklatex_utf8tohtml($utf8, $encodeASCII)
 		{
 			$result = '';
