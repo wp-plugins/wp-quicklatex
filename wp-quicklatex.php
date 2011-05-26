@@ -11,7 +11,7 @@
 */
 
 /*
-	Wordpress plugin for the QuickLaTeX.com rendering service.
+	Professional LaTeX plugin for Wordpress.
 
 	Project homepage: http://www.holoborodko.com/pavel/quicklatex/
 	Contact e-mail:   pavel@holoborodko.com
