@@ -76,7 +76,7 @@ I'll do my best to help you.
 
 = 3.7.7 =
 * Server has been updated to include newest packages and changes.
-* Improved settings page.
+* Settings page has been improved.
 * Fixed few minor bugs in plugin.
 * Improved rendering of TikZ pictures with overlays.
 * Improved support of chemistry-related packages: ChemFig, myChemistry.
