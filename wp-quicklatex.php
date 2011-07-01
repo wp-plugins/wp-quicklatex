@@ -11,7 +11,7 @@
 */
 
 /*
-	Professional LaTeX plugin for Wordpress.
+	Advanced LaTeX plugin for Wordpress.
 
 	Project homepage: http://www.holoborodko.com/pavel/quicklatex/
 	Contact e-mail:   pavel@holoborodko.com
