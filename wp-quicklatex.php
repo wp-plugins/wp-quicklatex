@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Insert formulas & graphics in the posts and comments using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info. 
-		Version: 3.7.7
+		Version: 3.7.8
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -1170,8 +1170,8 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		$image_height = 0;
 		$image_width  = 0;		
 		$status 	 = -100; // indicates global (unknown) error
-		$error_msg   = "Cannot generate formula";
-		$out_str     = "Cannot generate formula";
+		$error_msg   = "Unknown error";
+		$out_str     = "Unknown error";
 		$displayed_equation = false;
 		$tikz_picture = false;
 		$tikz_width = $width;
@@ -1470,22 +1470,31 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 										$image_data = $server->request($image_url);
 										if(!is_wp_error($image_data))
 										{
+										
 											$handle = fopen($image_full_path, "w");
 											fwrite($handle,$image_data['body']);
 											fclose($handle);
 
 											$image_url = WP_QUICKLATEX_CACHE_URL.'/'.$image_file;
+											
+										}else{
+										
+											$error_msg = "Cannot download image from QuickLaTeX server: ".$image_data->get_error_message()."\nPlease make sure your server/PHP settings allow HTTP requests to external resources (\"allow_url_fopen\", etc.)\nThese links might help in finding solution:\nhttp://wordpress.org/extend/plugins/core-control/\nhttp://wordpress.org/support/topic/an-unexpected-http-error-occurred-during-the-api-request-on-wordpress-3?replies=37";															
 										}
 									}
 								}
 							}
 						}
+						
+					}else{
+					
+						$error_msg = "Cannot connect to QuickLaTeX server: ".$server_resp->get_error_message()."\nPlease make sure your server/PHP settings allow HTTP requests to external resources (\"allow_url_fopen\", etc.)\nThese links might help in finding solution:\nhttp://wordpress.org/extend/plugins/core-control/\nhttp://wordpress.org/support/topic/an-unexpected-http-error-occurred-during-the-api-request-on-wordpress-3?replies=37";
 					}
 
-			} //if(!$image_url)
+			} // if(!$image_url)
 
 
-			if($image_url!=false) // Do we have a valid image_url?
+			if($image_url) // Do we have a valid image_url?
 			{
 			  	if($status == 0) //No errors
 				{
@@ -1556,13 +1565,24 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 						// Apply ql-manual-mode
 						$out_str = "<img src=\"$image_url\" class=\"ql-manual-mode\" alt=\"Rendered by QuickLaTeX.com\" title=\"Rendered by QuickLaTeX.com\"/>";
 					}
-				}else{
+					
+				}else{ // status == 0
 					// error msg can contain tags $ ... $ which should be escaped
 					// so we encode them as html entities
 				    $error_msg = quicklatex_verbatim_text($error_msg);
 					$out_str = "<pre class=\"ql-errors\">*** QuickLaTeX cannot compile formula:\n".quicklatex_verbatim_text($formula_text)."\n\n*** Error message:\n$error_msg</pre>";
 				}
+				
+			}else{ // image_url
+			
+				// show error instead of formula
+				// error msg can contain tags $ ... $ which should be escaped
+				// so we encode them as html entities
+				$error_msg = quicklatex_verbatim_text($error_msg);
+				$out_str = "<pre class=\"ql-errors\">*** QuickLaTeX cannot compile formula:\n".quicklatex_verbatim_text($formula_text)."\n\n*** Error message:\n$error_msg</pre>";
+				
 			}
+			
 			return $out_str;
 		}
 	}
