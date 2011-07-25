@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.7
+Stable tag: 3.7.8
 Requires at least: 2.8
 Tested up to: 3.1.4
 
@@ -73,6 +73,9 @@ Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoboro
 I'll do my best to help you.
 
 == Change Log ==
+
+= 3.7.8 =
+* Diagnostics on HTTP connection errors caused by server/PHP configuration have been added.
 
 = 3.7.7 =
 * Server has been updated to include newest packages and changes.
