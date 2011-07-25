@@ -1,4 +1,4 @@
-=== WP QuickLaTeX ===
+﻿=== WP QuickLaTeX ===
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
