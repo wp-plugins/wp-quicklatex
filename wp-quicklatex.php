@@ -870,7 +870,8 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 									<tr>
 										<td>
 											<select name="os0">
-												<option value="Happy user" selected="selected">$21.00 - Happy user</option>
+												<option value="Thanks for the plugin!" selected="selected">$13.00 - Thanks for the plugin!</option>											
+												<option value="Happy user">$21.00 - Happy user</option>
 												<option value="Supporter">$34.00 - Supporter</option>
 												<option value="1mo Hosting Donator">$55.00 - 1mo Hosting Donator </option>
 												<option value="2mo Hosting Donator">$89.00 - 2mo Hosting Donator</option>
