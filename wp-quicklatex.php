@@ -2,8 +2,8 @@
 /*
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
-		Description: Insert formulas & graphics in the posts and comments using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info. 
-		Version: 3.7.8
+		Description: Access to complete LaTeX distribution. Publish formulae & graphics using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI dialog. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
+		Version: 3.7.9
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -67,6 +67,8 @@
 	SUCH DAMAGE.
 */
 
+	define("QUICKLATEX_PRODUCTION", false);
+	
 	// Prevent direct call to this php file
 	if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
@@ -437,7 +439,9 @@
 		</div>
 
 		<div id="holder">
-
+		
+		<div class="metabox-holder">		
+		
 			<!-- settings area -->
 
 			<form id="optionsform" method="post" action="options.php">  <!-- AJAX id added -->
@@ -843,25 +847,23 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 
 				</div> <!-- tabs -->
 			</form> <!-- form -->
-
+		</div>
 		</div> <!-- holder -->
 
 
 		<!-- right sidebar -->
 		<div class="postbox-container" id="likethis">
+		<div class="metabox-holder">		
 				<div id="ql-support" class="postbox">
+					<div class="handlediv" title="Click to toggle"><br></div>
+					<h3 class="hndle"><span>Like QuickLaTeX?</span></h3>
+				
 					<div class="inside">
 						<div class="ql-postbox-content">
 							<p class="ql-p-centered"><strong>QuickLaTeX is not just a plugin.</strong></p>
 
-							<p class="ql-p-justified">There is a custom-built <a href="http://quicklatex.com/">QuickLaTeX server</a> behind it which actually does all the dirty work. It runs 24x365 and requires constant maintenance and further development.</p>
-							<p class="ql-p-centered"><strong>To keep development and free updates coming please support us by the following:</strong></p>
-							<ul>
-								<li><a href="http://www.holoborodko.com/pavel/quicklatex/">Keep link to QuickLaTeX on your website</a></li>
-								<li><a href="http://www.holoborodko.com/pavel/quicklatex/">Write post about QuickLaTeX</a></li>
-								<li><a href="http://wordpress.org/extend/plugins/wp-quicklatex/">Rate QuickLaTeX on WordPress.org</a></li>
-								<li><a href="http://www.holoborodko.com/pavel/quicklatex/">Let us know if it works for you</a></li>
-							</ul>
+							<p class="ql-p-justified">There is a custom-built <a href="http://quicklatex.com/">QuickLaTeX server</a> behind which actually renders every formula on your site. Server works 365x24 and requires constant maintenance.</p>
+							<p class="ql-p-centered"><strong>To keep development and free updates coming please help us pay hosting bills.</strong></p>
 							<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 								<input type="hidden" name="cmd" value="_s-xclick" />
 								<input type="hidden" name="hosted_button_id" value="PG7NTGB7YAMXN" />
@@ -892,6 +894,19 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 						</div>
 					</div>
 				</div> <!-- Like this plugin? -->
+		
+				<div id="ql-partners" class="postbox">
+					<div class="handlediv" title="Click to toggle"><br></div>
+					<h3 class="hndle"><span>Friends</span></h3>
+					<div class="inside">
+						<p class="ql-p-centered">
+						<a href="http://www.advanpix.com/" target="_blank">
+							<img <?php echo 'src="'.WP_QUICKLATEX_PLUGIN_DIR.'images/amct_logo.png'.'"'; ?> alt="Advanpix Multiprecision Computing Toolbox"/>					
+						</a>
+						</p>
+					</div>				
+				</div>
+		</div>
 		</div>
 
 	</div> <!-- wrap -->
@@ -1408,8 +1423,8 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 					// Create new query to the QuickLaTeX.com to generate formula
 
 					// URL for POST request
-					$url = 'http://www.quicklatex.com/latex3.f';	// Production
-					//$url = 'http://localhost/latex3.f';		// Dev
+					if (QUICKLATEX_PRODUCTION)		$url = 'http://www.quicklatex.com/latex3.f';
+					else 					    	$url = 'http://localhost/latex3.f';		
 
 					$body =       'formula=' .quicklatex_encode($formula_text);
 					$body = $body.'&fsize='  .$size.'px';
@@ -1451,6 +1466,9 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 							$image_height = $regs[5];
 							$error_msg    = $regs[6];
 
+							if (!QUICKLATEX_PRODUCTION)	$image_url = str_replace("quicklatex.com", "localhost", $image_url);
+							
+							
 							if ($status == 0) // Everything is all right!
 							{
 								// Write formula to the cache if we allowed to
@@ -1575,13 +1593,13 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 				}
 				
 			}else{ // image_url
-			
+
+				// There is no formula in the cache & we couldn't connect/download it from QuickLaTeX server either.
 				// show error instead of formula
 				// error msg can contain tags $ ... $ which should be escaped
 				// so we encode them as html entities
 				$error_msg = quicklatex_verbatim_text($error_msg);
 				$out_str = "<pre class=\"ql-errors\">*** QuickLaTeX cannot compile formula:\n".quicklatex_verbatim_text($formula_text)."\n\n*** Error message:\n$error_msg</pre>";
-				
 			}
 			
 			return $out_str;
@@ -1653,8 +1671,8 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 				$usecache = is_quicklatex_cache_writable(WP_QUICKLATEX_CACHE_DIR);
 				$permalink = quicklatex_encode(get_option('siteurl').' '.get_permalink());
 				
-				$url = 'http://www.quicklatex.com/latex3s.f';	// Production			
-				//$url = 'http://localhost/latex3s.f';		// Dev
+				if (QUICKLATEX_PRODUCTION)		$url = 'http://www.quicklatex.com/latex3s.f';
+				else 					    	$url = 'http://localhost/latex3s.f';		
 
 				$body  = 'fpp='        .$ql_fpp;
 				$body .= '&time='      .$time;
@@ -1776,11 +1794,11 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 			// Set global attributes for the page
 			$ql_atts = $attr;
 
-			// Remove [latexpage] tag from the page
-			$content = str_replace($m[1], '', $content);
-
 			// Enable NLS for the page
 			$ql_nlspage = true;
+			
+			// Finally remove [latexpage] tag from the page			
+			return '';
 		}
 	}
 
@@ -1964,9 +1982,11 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		return $first.quicklatex_kernel($attr,$text).$last;
 	}
 
+	// ********************************************************
 	// Utilities
+	
 	// Try to create and check if cache folder is writable
-	// Use is_readable() to check readability
+	// Reference: use is_readable() to check readability
 	function is_quicklatex_cache_writable($path)
 	{
 		// Check if cache directory exists
@@ -2054,7 +2074,6 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 	}
 
 	// Prepare latex source code for alt 
-	// Remove new line
 	function quicklatex_alt_text($string)
 	{
 		$string = quicklatex_verbatim_text($string);
@@ -2072,7 +2091,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		// Decode HTML entities (numeric or literal) to characters, e.g. &amp; to &.
 		$string = quicklatex_unhtmlentities($string);
 
-		// Encode everything in html codes even ASCII
+		// Encode everything (even ASCII) in HTML hex codes
 		$string = quicklatex_utf8tohtml($string, true);
 		
 		return $string;

@@ -2,11 +2,11 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.8
+Stable tag: 3.7.9
 Requires at least: 2.8
 Tested up to: 3.2.1
 
-Insert math in posts/comments using native LaTeX syntax. Inline formulas, displayed equations with numbering, AMS-LaTeX, TikZ, custom LaTeX preamble.
+Access to complete LaTeX distribution. Allows native LaTeX syntax directly in posts/comments, custom preamble, TikZ, inline & displayed equations.
 
 == Description ==
 
@@ -73,6 +73,10 @@ Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoboro
 I'll do my best to help you.
 
 == Change Log ==
+
+= 3.7.9 =
+* Fixed critical bug in parsing. Update is strongly recommended.
+* Minor changes in settings page.
 
 = 3.7.8 =
 * Diagnostics on HTTP connection errors caused by server/PHP configuration have been added.
