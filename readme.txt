@@ -75,7 +75,7 @@ I'll do my best to help you.
 == Change Log ==
 
 = 3.7.9 =
-* Fixed critical bug in parsing. Update is strongly recommended.
+* Critical bug in parsing has been fixed. Update is strongly recommended.
 * Minor changes in settings page.
 
 = 3.7.8 =
