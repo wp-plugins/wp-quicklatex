@@ -67,7 +67,7 @@
 	SUCH DAMAGE.
 */
 
-	define("QUICKLATEX_PRODUCTION", false);
+	define("QUICKLATEX_PRODUCTION", true);
 	
 	// Prevent direct call to this php file
 	if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
