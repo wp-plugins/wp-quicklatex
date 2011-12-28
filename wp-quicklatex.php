@@ -9,7 +9,6 @@
 		Copyright: Pavel Holoborodko
 		License: GPL2
 */
-
 /*
 	Advanced LaTeX plugin for Wordpress.
 

@@ -70,7 +70,7 @@ Check [plugin home page](http://www.holoborodko.com/pavel/quicklatex/) for more 
 = How can I send bug reports or request new feature? =
 
 Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/).
-I'll do my best to help you.
+I will do my best to help you.
 
 == Change Log ==
 
