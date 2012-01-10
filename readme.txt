@@ -4,7 +4,7 @@ Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
 Stable tag: 3.7.9
 Requires at least: 2.8
-Tested up to: 3.3
+Tested up to: 3.3.1
 
 Access to complete LaTeX distribution. Allows native LaTeX syntax directly in posts/comments, custom preamble, TikZ, inline & displayed equations.
 
@@ -70,7 +70,7 @@ Check [plugin home page](http://www.holoborodko.com/pavel/quicklatex/) for more 
 = How can I send bug reports or request new feature? =
 
 Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/).
-I will do my best to help you.
+I'll do my best to help you.
 
 == Change Log ==
 
