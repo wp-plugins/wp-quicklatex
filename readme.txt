@@ -6,7 +6,7 @@ Stable tag: 3.7.9
 Requires at least: 2.8
 Tested up to: 3.3.1
 
-Access to complete LaTeX distribution. Allows native LaTeX syntax directly in posts/comments, custom preamble, TikZ, inline & displayed equations.
+Advanced LaTeX plugin. Copy-paste exchange with offline papers. Allows custom preamble/TexLive packages. Supports TikZ, proper formulae alignment.
 
 == Description ==
 
