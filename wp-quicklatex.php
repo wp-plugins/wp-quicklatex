@@ -9,6 +9,7 @@
 		Copyright: Pavel Holoborodko
 		License: GPL2
 */
+
 /*
 	Advanced LaTeX plugin for Wordpress.
 
@@ -861,8 +862,8 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 						<div class="ql-postbox-content">
 							<p class="ql-p-centered"><strong>QuickLaTeX is not just a plugin.</strong></p>
 
-							<p class="ql-p-justified">There is a custom-built <a href="http://quicklatex.com/">QuickLaTeX server</a> behind which actually renders every formula on your site. Server works 365x24 and requires constant maintenance.</p>
-							<p class="ql-p-centered"><strong>To keep development and free updates coming please help us pay hosting bills.</strong></p>
+							<p class="ql-p-justified">There is a custom-built <a href="http://quicklatex.com/">QuickLaTeX server</a> running 365x24 which actually does all the heavy work rendering formulae on your site.</p>
+							<p class="ql-p-centered"><strong>Your donation will go directly to cover server's hosting bills, maintenance and service improvements.</strong></p>
 							<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 								<input type="hidden" name="cmd" value="_s-xclick" />
 								<input type="hidden" name="hosted_button_id" value="PG7NTGB7YAMXN" />
