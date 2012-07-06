@@ -4,7 +4,7 @@ Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
 Stable tag: 3.7.9
 Requires at least: 2.8
-Tested up to: 3.3.1
+Tested up to: 3.4.1
 
 Advanced LaTeX plugin. Copy-paste exchange with offline papers. Allows custom preamble/TexLive packages. Supports TikZ, proper formulae alignment.
 
