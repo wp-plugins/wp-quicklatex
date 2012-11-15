@@ -76,7 +76,7 @@ I'll do my best to help you.
 == Change Log ==
 
 = 3.8.0 =
-* Added rendering to SVG. Pluging automatically falls back to PNG for old browsers.
+* Added rendering to SVG.
 * Fixed minor bug on a server side.
 
 = 3.7.9 =
