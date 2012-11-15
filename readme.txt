@@ -1,10 +1,10 @@
 ﻿=== WP QuickLaTeX ===
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
-Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot
-Stable tag: 3.7.9
+Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot, SVG
+Stable tag: 3.8.0
 Requires at least: 2.8
-Tested up to: 3.4.1
+Tested up to: 3.4.2
 
 Advanced LaTeX plugin. Copy-paste exchange with offline papers. Allows custom preamble/TexLive packages. Supports TikZ, proper formulae alignment.
 
@@ -14,6 +14,7 @@ Insert formulas & graphics in the posts and comments using native LaTeX shorthan
 
 1.  Standard LaTeX expressions can be cut and pasted directly into WordPress posts, pages, and comments; display environments require no enclosures, other expressions require only a surrounding <code>$..$</code> or <code>\[..\]</code>.  No need for enclosing tags <code>[latex] ... [/latex]</code>.
 1.  Correct vertical positioning of inline formulas relative to baseline of surrounding text. Say “NO” to jumpy equations produced by other plugins!
+1.  SVG vector graphics support, so that formulas are crisp regardless of scaling in browser.
 1.  (AMS)LaTeX displayed math environments support: <code>equation, align, gather, multiline, flalign, alignat,</code> etc.
 1.  Automatic numbering of displayed equations. Override autonumbering with `\tag{}` LaTeX command.
 1.  Equation hyper-referencing by standard LaTeX rules with `\label{}`, `\ref{}`.
@@ -73,6 +74,10 @@ Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoboro
 I'll do my best to help you.
 
 == Change Log ==
+
+= 3.8.0 =
+* Added rendering to SVG. Pluging automatically falls back to PNG for old browsers.
+* Fixed minor bug on a server side.
 
 = 3.7.9 =
 * Fixed critical bug in parsing. Update is strongly recommended.

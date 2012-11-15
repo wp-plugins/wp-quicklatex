@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Access to complete LaTeX distribution. Publish formulae & graphics using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI dialog. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
-		Version: 3.7.9
+		Version: 3.8.0
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -83,7 +83,7 @@
 
 	if( !class_exists( 'WP_Http' ) )
 			include_once( ABSPATH . WPINC. '/class-http.php' );
-
+	
 	// Define some constants http://codex.wordpress.org/Determining_Plugin_and_Content_Directories
 	if ( ! defined( 'WP_CONTENT_DIR' ) )
 		  define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
@@ -133,7 +133,7 @@
 
 		'exclude_dollars'		    => 0,		//  1 - Exclude $ ... $ from processing
 
-		'image_format'				=> 1		// Image Format:
+		'image_format'				=> 3		// Image Format:
 												// 0 - GIF
 												// 1 - PNG
 												// 2 - SVG
@@ -175,6 +175,7 @@
 	add_action('init','quicklatex_init');
 	add_action('admin_init', 'quicklatex_admin_init');
 	add_action('admin_menu', 'quicklatex_menu');
+	add_action('wp_print_scripts', 'quicklatex_frontend_scripts');
 
 	if (function_exists('register_uninstall_hook'))
     	register_uninstall_hook(__FILE__, 'uninstall_quicklatex');
@@ -261,6 +262,10 @@
 			{
 				// Setup & add options to DB
 				$g_options['image_format'] = 1;
+			}else{
+			
+				// Switch from GIF to PNG
+				if($g_options['image_format']==0) $g_options['image_format'] = 1;			  
 			}
 
 			// Add all new fields to DB
@@ -275,7 +280,7 @@
 		$ql_bg_type     	=$g_options['bg_type'];
 		$ql_bg_color    	=$g_options['bg_color'];
 		$ql_mode        	=$g_options['latex_mode'];
-		$ql_preamble    	= quicklatex_sanitize_text($g_options['preamble']);
+		$ql_preamble    	=quicklatex_sanitize_text($g_options['preamble']);
 		$ql_use_cache   	=$g_options['use_cache'];
 		$ql_show_errors 	=$g_options['show_errors'];
 		$ql_link        	=$g_options['add_footer_link'];
@@ -284,7 +289,7 @@
 		$ql_latexsyntax 	=$g_options['latex_syntax'];
 		$ql_exclude_dollars =$g_options['exclude_dollars'];
 		$ql_imageformat 	=$g_options['image_format'];
-		$ql_nlspage 		= $ql_latexsyntax; // Do we have NLS page or not?
+		$ql_nlspage 		=$ql_latexsyntax; // Do we have NLS page or not?
 		
 		// Autonumbering.
 		// Set equation number to 1 on the page start
@@ -332,6 +337,16 @@
 		}
 	}
 
+ 	function quicklatex_frontend_scripts()
+    {
+		// Load JS on front page	
+		if (!is_admin())
+			{
+			  wp_enqueue_script('jquery');
+			  wp_enqueue_script('wp-quicklatex-frontend', WP_QUICKLATEX_PLUGIN_DIR.'js/wp-quicklatex-frontend.js', array('jquery'), '1.0');
+		    }	
+	}
+	
  	function quicklatex_admin_scripts()
     {
 		// Load JS on admin page
@@ -410,7 +425,10 @@
 		if (isset($newinput['show_errors']) == false ) $newinput['show_errors'] = 0;
 		if (isset($newinput['latex_syntax']) == false ) $newinput['latex_syntax'] = 0;
 		if (isset($newinput['exclude_dollars']) == false ) $newinput['exclude_dollars'] = 0;
-
+		
+		// Make sure we never get GIF
+		if($newinput['image_format']==0) $newinput['image_format'] = 1;			  
+		
 		// POST sends only fields being used on the form
 		// Fill out all other fields - otherwise they are not stored in the DB!!!!
 		$options = get_option('quicklatex');
@@ -694,10 +712,10 @@ Here is reference to non-existing equation (\ref{eq:unknown}).<br />
 								<td valign="top">
 									<select class="select" name="quicklatex[image_format]" id="imgformat_combobox">
 									<?php 
-										echo '<option value="0"'.(0==$options['image_format']?'selected="selected"':'').'>'.'GIF'.'</option>'; 															
+										echo '<option value="0"'.(0==$options['image_format']?'selected="selected"':'').'disabled="disabled">'.'GIF'.'</option>'; 															
 										echo '<option value="1"'.(1==$options['image_format']?'selected="selected"':'').'>'.'PNG'.'</option>'; 															
-										//echo '<option value="2"'.(2==$options['image_format']?'selected="selected"':'').'disabled="disabled">'.'SVG'.'</option>'; 															
-										//echo '<option value="3"'.(3==$options['image_format']?'selected="selected"':'').'disabled="disabled">'.'Detect Automatically'.'</option>'; 	
+										echo '<option value="2"'.(2==$options['image_format']?'selected="selected"':'').'>'.'SVG'.'</option>'; 															
+										echo '<option value="3"'.(3==$options['image_format']?'selected="selected"':'').'>'.'Auto'.'</option>'; 	
 									?>
 									</select>
 								</td>
@@ -707,7 +725,7 @@ Here is reference to non-existing equation (\ref{eq:unknown}).<br />
 							<tr class="ql-row even">
 								<td class="ql-desc" colspan="3">
 									<small>
-									GIF is the safest, PNG gives much better visual quality.
+									Output image format. 'Auto' is recommended choice.
 									<!-- SVG is the best, but not implemented yet. In the next versions QuickLaTeX will choose image format automatically depending on visitor's browser capability. -->
 									</small>
 								</td>
@@ -817,7 +835,7 @@ Here is reference to non-existing equation (\ref{eq:unknown}).<br />
 					<!-- About -->
 					<div id="tab-about">
 <p class="ql-about">
-QuickLaTeX is free under linkware license. Which means service can be used (a) on non-commercial websites (b) with visible and direct backlink to <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a>.
+QuickLaTeX is free under linkware license. Which means service can be used: (a) on non-commercial websites; (b) with visible and direct backlink to <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a>.
 </p>
 
 <p class="ql-about">
@@ -860,10 +878,14 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 				
 					<div class="inside">
 						<div class="ql-postbox-content">
-							<p class="ql-p-centered"><strong>QuickLaTeX is not just a plugin.</strong></p>
 
-							<p class="ql-p-justified">There is a custom-built <a href="http://quicklatex.com/">QuickLaTeX server</a> running 365x24 which actually does all the heavy work rendering formulae on your site.</p>
-							<p class="ql-p-centered"><strong>Your donation will go directly to cover server's hosting bills, maintenance and service improvements.</strong></p>
+						<p class="ql-p-justified">
+						<strong>
+						    Want to help make this plugin even better? 
+							Donate and help keep new plugin improvements coming!
+						</strong>
+						</p>	
+				
 							<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 								<input type="hidden" name="cmd" value="_s-xclick" />
 								<input type="hidden" name="hosted_button_id" value="PG7NTGB7YAMXN" />
@@ -886,11 +908,16 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 									<tr>
 										<td style="text-align:center;">
 											<input type="hidden" name="currency_code" value="USD" />
-											<input type="image" <?php echo 'src="'.WP_QUICKLATEX_PLUGIN_DIR.'images/ql_donate.png'.'"'; ?> name="submit" alt="PayPal - The safer, easier way to pay online." />
+											<input type="image" <?php echo 'src="'.WP_QUICKLATEX_PLUGIN_DIR.'images/donate.gif'.'"'; ?> name="submit" alt="PayPal - The safer, easier way to pay online." />
 										</td>
 									</tr>
 								</table>
 							</form>
+							
+						<p class="ql-p-centered">
+							<small>	All donations will be used for development of the plugin.</small>							
+						</p>
+						
 						</div>
 					</div>
 				</div> <!-- Like this plugin? -->
@@ -1126,18 +1153,18 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		
 		// Default atts for formula compilation - inherited from globals
 		$default_atts = array(
-						  'size' 				=> $ql_size,					// font size in pixels
-						  'color' 			=> $ql_color,					// text color
-						  'background' 	=> false,				// background color
-						  'mode' 				=> $ql_mode,					// mode, magical
-						  'example'			=> 'false',					// show source code of formula without compilation
-						  'errors'			=> $ql_show_errors,			// be strict and show latex errors & warnings
-						  'reqno'				=> null,    					// eq. number placed on the right
-						  'leqno'				=> null,   					// eq. number placed on left
-						  'eqno'				=> null,    					// eq. number with aligment from global option
-						  'align'				=> null,	 					// horizontal align of displayed equation - valid only for displayed equations.
-						  'width'				=> null,   					// picture width - valid only for pictures (tikz).
-						  'eqlabel'			=> null	    				// eq. label placed on the opposite side of eqno.
+						  'size' 		=> $ql_size,					// font size in pixels
+						  'color' 		=> $ql_color,					// text color
+						  'background' 	=> false,						// background color
+						  'mode' 		=> $ql_mode,					// mode, magical
+						  'example'		=> 'false',						// show source code of formula without compilation
+						  'errors'		=> $ql_show_errors,				// be strict and show latex errors & warnings
+						  'reqno'		=> null,    					// eq. number placed on the right
+						  'leqno'		=> null,   						// eq. number placed on left
+						  'eqno'		=> null,    					// eq. number with aligment from global option
+						  'align'		=> null,	 					// horizontal align of displayed equation - valid only for displayed equations.
+						  'width'		=> null,   						// picture width - valid only for pictures (tikz).
+						  'eqlabel'		> null	    					// eq. label placed on the opposite side of eqno.
 						  );
 
 		// Rewrite default atts with parameters supplied by user
@@ -1196,7 +1223,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		$label_link = null;
 		$ql_fpp = $ql_fpp + 1;
 		$imageformat = $ql_imageformat; //shortcut for global var
-
+		
 		// Check for custom preamble in the formula_text
 		if(preg_match('/(\[(\+?)preamble\b(.*?)\](.*?)\[\/\+?preamble\])/si', $formula_text, $m))
 		{
@@ -1356,34 +1383,32 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 
 		  	// Build hash based on local and global settings.
 			// So it will change if any setting is changed.
-			$formula_hash = md5($formula_rawtext.$preamble.$size.$color.$background.$mode.$errors.$imageformat.$width);
-
+			//$formula_hash = md5($formula_rawtext.$preamble.$size.$color.$background.$mode.$errors.$imageformat.$width);
+			$formula_hash = md5($formula_rawtext.$preamble.$size.$color.$background.$mode.$errors.'1'.$width);			
+			
+			$extrastyles = '';
 			switch ($imageformat) {
-				case 0:
-					$image_ext = 'gif';
-
-					// Force PNG for tikz pictures anyway
-					if(true==$tikz_picture) $image_ext = 'png';
+				case 0: // GIF, use PNG anyway
+				case 1: // PNG
+					$image_ext   = 'png';
 					break;
-				case 1:
-					$image_ext = 'png';
-					break;
-/*
-				// Not implemented yet
-				case 2:
-					$image_ext = 'svg';
+					
+				case 2: // SVG
+					$image_ext   = 'svg';
 					break;
 
-				case 3:
-					// Detect Automatically
-					$image_ext = ?;
+				case 3: // Auto
+					$image_ext   = 'png';
+					$extrastyles = 'quicklatex-auto-format';
 					break;
-*/
 			}
 
 			$info_file  = 'quicklatex.com-'.$formula_hash.'_l3.txt';
 			$image_file = 'quicklatex.com-'.$formula_hash.'_l3.'.$image_ext;
-
+			
+			//$png_image_file = 'quicklatex.com-'.$formula_hash.'_l3.svg';			
+			//$svg_image_file = 'quicklatex.com-'.$formula_hash.'_l3.svg';
+			
 			$cache_url  = WP_QUICKLATEX_CACHE_URL;
 			$cache_path = WP_QUICKLATEX_CACHE_DIR;
 
@@ -1393,30 +1418,38 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 			// Should we use cache?
 			if($ql_use_cache==1)
 			{
-				// Check do we have formula in the cache?
-				if(file_exists($info_full_path) && file_exists($image_full_path))
+			    // Check info file in cache 
+				if(file_exists($info_full_path)  && is_readable($info_full_path))
 				{
-					// Check if it readable
-					if(is_readable($info_full_path) && is_readable($image_full_path))
+					// Check required format first
+					$inCache = file_exists($image_full_path) && is_readable($image_full_path);
+					
+					if($imageformat==3)
 					{
-							// Get formula from the cache
-							// Read info file
-							$handle       = fopen($info_full_path, "r");
-							$image_url    = rtrim(fgets($handle),"\n");
-							$image_align  = rtrim(fgets($handle),"\n");
-							$image_width  = rtrim(fgets($handle),"\n");							
-							$image_height = rtrim(fgets($handle),"\n");
-							fclose($handle);
+						// Check also for SVG in Auto mode						
+						$image_full_path_svg = str_replace("png", "svg", $image_full_path);
+						$inCache = $inCache && file_exists($image_full_path_svg) && is_readable($image_full_path_svg);
+					}					
 
-							$image_url = WP_QUICKLATEX_CACHE_URL.'/'.$image_file;
-							$status = 0;
+					if($inCache)
+					{
+						// Everything is Ok - read cached image properties
+						$handle       = fopen($info_full_path, "r");
+						$image_url    = rtrim(fgets($handle),"\n");
+						$image_align  = rtrim(fgets($handle),"\n");
+						$image_width  = rtrim(fgets($handle),"\n");							
+						$image_height = rtrim(fgets($handle),"\n");
+						fclose($handle);
+
+						$image_url = WP_QUICKLATEX_CACHE_URL.'/'.$image_file;
+						$status = 0;
 					}
 				}
 			}
 
-			  // Check if we still do not have image_url, reasons:
-			  // - we pushed to not use cache
-			  // - or formula is not in the cache
+			// Check if we still do not have image_url, reasons:
+			// - we pushed to not use cache
+			// - or formula is not in the cache
 			if(!$image_url)
 			{
 					// Cannot access cache or formula is not in the cache.
@@ -1424,7 +1457,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 
 					// URL for POST request
 					if (QUICKLATEX_PRODUCTION)		$url = 'http://www.quicklatex.com/latex3.f';
-					else 					    	$url = 'http://localhost/latex3.f';		
+					else 					    	$url = 'http://quicklatex.lan/latex3.f';		
 
 					$body =       'formula=' .quicklatex_encode($formula_text);
 					$body = $body.'&fsize='  .$size.'px';
@@ -1449,12 +1482,14 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 					// Send request to compile LaTeX code on the server
 					$server = new WP_Http;
 
-					//echo '<br />'.$body.'<br />';
+					//echo '<pre>'.$body.'</pre>';
 
 					$server_resp = $server->post($url,array('body'=>$body, 'timeout'=> 60));
 
 					if(!is_wp_error($server_resp)) // Check for error codes $server_resp['response']['code']
 					{
+						//echo '<pre>'.$server_resp['body'].'</pre>';					
+						
 						// Everyting is ok, parse server response
 						if (preg_match("/^([-]?\d+)\r\n(\S+)\s([-]?\d+)\s(\d+)\s(\d+)\r?\n?([\s\S]*)/", $server_resp['body'], $regs))
 						{
@@ -1467,7 +1502,6 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 							$error_msg    = $regs[6];
 
 							if (!QUICKLATEX_PRODUCTION)	$image_url = str_replace("quicklatex.com", "localhost", $image_url);
-							
 							
 							if ($status == 0) // Everything is all right!
 							{
@@ -1484,8 +1518,9 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 										fwrite($handle,$image_height."\n");												
 										fclose($handle);
 
-										// Cache image file
-										// Download it from the server
+										$isSuccess = false;
+										
+										// Cache image file - PNG
 										$image_data = $server->request($image_url);
 										if(!is_wp_error($image_data))
 										{
@@ -1494,12 +1529,30 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 											fwrite($handle,$image_data['body']);
 											fclose($handle);
 
-											$image_url = WP_QUICKLATEX_CACHE_URL.'/'.$image_file;
-											
+											$isSuccess = true;
 										}else{
 										
 											$error_msg = "Cannot download image from QuickLaTeX server: ".$image_data->get_error_message()."\nPlease make sure your server/PHP settings allow HTTP requests to external resources (\"allow_url_fopen\", etc.)\nThese links might help in finding solution:\nhttp://wordpress.org/extend/plugins/core-control/\nhttp://wordpress.org/support/topic/an-unexpected-http-error-occurred-during-the-api-request-on-wordpress-3?replies=37";															
 										}
+										
+										// Cache image file - SVG
+										$svg_image_url  = str_replace("png", "svg", $image_url);
+										$svg_image_data = $server->request($svg_image_url);
+										if(!is_wp_error($svg_image_data))
+										{
+											$svg_image_full_path = str_replace("png", "svg", $image_full_path);
+											$handle = fopen($svg_image_full_path, "w");
+											fwrite($handle,$svg_image_data['body']);
+											fclose($handle);
+											
+											$isSuccess = $isSuccess && true;
+										}else{
+										
+											$error_msg = "Cannot download image from QuickLaTeX server: ".$svg_image_data->get_error_message()."\nPlease make sure your server/PHP settings allow HTTP requests to external resources (\"allow_url_fopen\", etc.)\nThese links might help in finding solution:\nhttp://wordpress.org/extend/plugins/core-control/\nhttp://wordpress.org/support/topic/an-unexpected-http-error-occurred-during-the-api-request-on-wordpress-3?replies=37";															
+										}
+										
+										if($isSuccess)	$image_url = WP_QUICKLATEX_CACHE_URL.'/'.$image_file;
+										else			$image_url = false;
 									}
 								}
 							}
@@ -1523,7 +1576,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 						{
 								// tikZ picture
 								$out_str  = '<p class="ql-center-picture">';
-								$out_str .= "<img src=\"$image_url\""."class=\"ql-img-picture\""."alt=\"Rendered by QuickLaTeX.com\" title=\"Rendered by QuickLaTeX.com\"/>";
+								$out_str .= "<img src=\"$image_url\""." height=\"$image_height\" width=\"$image_width\""." class=\"ql-img-picture $extrastyles\""." alt=\"Rendered by QuickLaTeX.com\" title=\"Rendered by QuickLaTeX.com\"/>";
 								$out_str .= "</p>";
 						}else{
 							if($displayed_equation==false)
@@ -1531,8 +1584,8 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 								// Inline formula
 								// Apply ql-inline-formula style class, setup correct vertical alignment
 
-								$out_str  = "<img src=\"$image_url\" class=\"ql-img-inline-formula\" alt=\"".quicklatex_alt_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
-								
+								$out_str  = "<img src=\"$image_url\" class=\"ql-img-inline-formula $extrastyles\" alt=\"".quicklatex_alt_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
+								$out_str .= " height=\"$image_height\" width=\"$image_width\"";
 								$out_str .= " style=\"vertical-align: ".-$image_align."px;\"/>";								
 								
 							}else{
@@ -1571,7 +1624,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 								}
 								
 								// Place image on the page
-								$out_str .= "<img src=\"$image_url\""."class=\"ql-img-displayed-equation\" alt=\"".quicklatex_alt_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
+								$out_str .= "<img src=\"$image_url\""." height=\"$image_height\" width=\"$image_width\""." class=\"ql-img-displayed-equation $extrastyles\" alt=\"".quicklatex_alt_text($formula_text)."\" title=\"Rendered by QuickLaTeX.com\"";
 
 								$out_str .= "/>";
 
@@ -1582,7 +1635,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 					}else{
 					    // $mode = 1
 						// Apply ql-manual-mode
-						$out_str = "<img src=\"$image_url\" class=\"ql-manual-mode\" alt=\"Rendered by QuickLaTeX.com\" title=\"Rendered by QuickLaTeX.com\"/>";
+						$out_str = "<img src=\"$image_url\" height=\"$image_height\" width=\"$image_width\" class=\"ql-manual-mode $extrastyles\" alt=\"Rendered by QuickLaTeX.com\" title=\"Rendered by QuickLaTeX.com\"/>";
 					}
 					
 				}else{ // status == 0
@@ -1606,6 +1659,7 @@ QuickLaTeX is free under linkware license. Which means service can be used (a) o
 		}
 	}
 
+	// Called once per page/comment/block
 	function quicklatex_parser($content)
 	{
 		global $ql_latexsyntax;
