@@ -4,9 +4,9 @@ Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot, SVG
 Stable tag: 3.8.0
 Requires at least: 2.8
-Tested up to: 3.4.2
+Tested up to: 3.6
 
-Advanced LaTeX plugin. Copy-paste exchange with offline papers. Allows custom preamble/TexLive packages. Supports TikZ, proper formulae alignment.
+LaTeX plugin for professionals. Copy-paste exchange with offline papers. Allows custom preamble, TikZ any other TeXLive package. Provides highest typographical quality.
 
 == Description ==
 
