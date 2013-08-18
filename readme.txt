@@ -6,7 +6,7 @@ Stable tag: 3.8.0
 Requires at least: 2.8
 Tested up to: 3.6
 
-LaTeX plugin for professionals. Copy-paste exchange with offline papers. Allows custom preamble, TikZ any other TeXLive package. Provides highest typographical quality.
+Advanced LaTeX plugin. Copy-paste exchange with offline papers. Allows custom preamble, TikZ any other TeXLive package. Provides highest typographical quality.
 
 == Description ==
 
