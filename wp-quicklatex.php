@@ -882,7 +882,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 						<p class="ql-p-justified">
 						<strong>
 						    Want to help make this plugin even better? 
-							Donate and help keep new plugin improvements coming!
+							Donate to keep new improvements coming!
 						</strong>
 						</p>	
 				
@@ -894,14 +894,13 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 									<tr>
 										<td>
 											<select name="os0">
-												<option value="Thanks for the plugin!" selected="selected">$13.00 - Thanks for the plugin!</option>											
-												<option value="Happy user">$21.00 - Happy user</option>
-												<option value="Supporter">$34.00 - Supporter</option>
-												<option value="1mo Hosting Donator">$55.00 - 1mo Hosting Donator </option>
-												<option value="2mo Hosting Donator">$89.00 - 2mo Hosting Donator</option>
-												<option value="New Feature Sponsor">$144.00 - New Feature Sponsor </option>
-												<option value="Server Upgrade Maecenas">$233.00 - Server Upgrade Maecenas</option>
-												<option value="Superman">$377.00 - Superman</option>
+												<option value="Thanks!" selected="selected">$5.00 - Thanks!</option>											
+												<option value="Two beers">$8.00 - Two beers</option>												
+												<option value="One meal">$13.00 - One meal</option>																								
+												<option value="Supporter">$21.00 - Supporter</option>
+												<option value="1mo Hosting Donator">$34.00 - 1mo Hosting Donator </option>
+												<option value="2mo Hosting Donator">$55.00 - 2mo Hosting Donator</option>
+												<option value="Super-human">$89.00 - Super-human</option>												
 											</select>
 										</td>
 									</tr>
@@ -924,7 +923,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 		
 				<div id="ql-partners" class="postbox">
 					<div class="handlediv" title="Click to toggle"><br></div>
-					<h3 class="hndle"><span>Friends</span></h3>
+					<h3 class="hndle"><span>Supporters:</span></h3>
 					<div class="inside">
 						<p class="ql-p-centered">
 						<a href="http://www.advanpix.com/" target="_blank">
