@@ -1236,7 +1236,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 			 	$preamble = $ql_preamble."\n".$m[4];
 			}else{
 				// Override global preamble (by default)
-				// if no preffix supplied
+				// if no prefix supplied
 
 				// Since local parameters/vars replace global ones.
 				// If user wants to add something in global preamble - he/she should do that using admin UI page.
@@ -1483,7 +1483,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 
 					//echo '<pre>'.$body.'</pre>';
 
-					$server_resp = $server->post($url,array('body'=>$body, 'timeout'=> 60));
+					$server_resp = $server->post($url,array('body'=>$body, 'timeout'=> 20));
 
 					if(!is_wp_error($server_resp)) // Check for error codes $server_resp['response']['code']
 					{
@@ -1590,7 +1590,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 							}else{
 							
 								// Displayed equation
-								// set up CSS based on tag prameter && global setting
+								// set up CSS based on tag parameter && global setting
 								$out_str = "";
 
 								// Insert link for further references
@@ -1734,7 +1734,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 				
 				// Send statistics to the server
 				$server = new WP_Http;
-				$server->post($url,array('body'=>$body, 'timeout'=> 60));
+				$server->post($url,array('body'=>$body, 'timeout'=> 5));
 			}
 		}
 
