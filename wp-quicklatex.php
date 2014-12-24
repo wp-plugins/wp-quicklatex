@@ -1483,7 +1483,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 
 					//echo '<pre>'.$body.'</pre>';
 
-					$server_resp = $server->post($url,array('body'=>$body, 'timeout'=> 20));
+					$server_resp = $server->post($url,array('body'=>$body, 'timeout'=> 40));
 
 					if(!is_wp_error($server_resp)) // Check for error codes $server_resp['response']['code']
 					{
@@ -1734,7 +1734,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 				
 				// Send statistics to the server
 				$server = new WP_Http;
-				$server->post($url,array('body'=>$body, 'timeout'=> 5));
+				$server->post($url,array('body'=>$body, 'blocking'=>false));
 			}
 		}
 

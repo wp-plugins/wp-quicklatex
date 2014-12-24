@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot, SVG
-Stable tag: 3.8.0
+Stable tag: 3.8.1
 Requires at least: 2.8
 Tested up to: 4.1
 
@@ -74,6 +74,9 @@ Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoboro
 I'll do my best to help you.
 
 == Change Log ==
+
+= 3.8.1 =
+* Switched to non-blocking connection to server to avoid delays/freeze if server is down.
 
 = 3.8.0 =
 * Added rendering to SVG.
