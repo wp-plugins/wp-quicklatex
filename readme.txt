@@ -76,7 +76,7 @@ I'll do my best to help you.
 == Change Log ==
 
 = 3.8.1 =
-* Switched to non-blocking connection to server to avoid delays/freeze if server is down.
+* Switched to non-blocking connection with server to avoid delays/freeze if server is down.
 
 = 3.8.0 =
 * Added rendering to SVG.
