@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Access to complete LaTeX distribution. Publish formulae & graphics using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI dialog. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
-		Version: 3.8.1
+		Version: 3.8.2
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -1812,7 +1812,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 		{
 			//  $ ... $
 			// !$ ... $ - verbatim source code
-			$content = preg_replace_callback('/(!*\$(.*?)\$)/s','do_quicklatex_inline_formulas', $content);
+			$content = preg_replace_callback('/(!*\$(?:latex)?(.*?)\$)/s','do_quicklatex_inline_formulas', $content);
 		}
 
 		return $content;

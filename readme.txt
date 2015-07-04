@@ -2,9 +2,9 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot, SVG
-Stable tag: 3.8.1
+Stable tag: 3.8.2
 Requires at least: 2.8
-Tested up to: 4.2
+Tested up to: 4.2.2
 
 Advanced LaTeX plugin. Native LaTeX syntax. Allows custom preamble, TikZ and other packages. Zoom-independent visual quality (SVG).
 
@@ -74,6 +74,10 @@ Please use comments on the plugin's web page [WP-QuickLaTeX](http://www.holoboro
 I'll do my best to help you.
 
 == Change Log ==
+
+= 3.8.2 =
+* Added support for `$latex ... $` syntax for easy switching from WP-LaTeX to WP-QuickLaTeX ;).
+* Server has been upgraded. Now QuickLaTeX server is located in Germany.
 
 = 3.8.1 =
 * Switched to non-blocking connection with server to avoid delays/freeze if server is down.
