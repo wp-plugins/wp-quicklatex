@@ -2,7 +2,7 @@
 Contributors: advanpix, cityjin, kirkpatrick 
 Donate link: http://www.holoborodko.com/pavel/quicklatex/
 Tags: latex, math, TikZ, gnuplot, equations, QuickLaTeX.com, plot, SVG
-Stable tag: 3.8.2
+Stable tag: 3.8.3
 Requires at least: 2.8
 Tested up to: 4.2.2
 
@@ -75,8 +75,12 @@ I'll do my best to help you.
 
 == Change Log ==
 
+= 3.8.3 =
+* Image size reduction using OptiPNG.
+* Minimized memory usage. Useful for restricted PHP configurations.
+
 = 3.8.2 =
-* Added support for `$latex ... $` syntax for easy switching from WP-LaTeX to WP-QuickLaTeX ;).
+* Added support for `$latex ... $` syntax for easy switching from WP-LaTeX ;).
 * Server has been upgraded. Now QuickLaTeX server is located in Germany.
 
 = 3.8.1 =

@@ -3,7 +3,7 @@
 		Plugin Name: WP QuickLaTeX
 		Plugin URI: http://www.holoborodko.com/pavel/quicklatex/
 		Description: Access to complete LaTeX distribution. Publish formulae & graphics using native LaTeX syntax directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI dialog. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info.
-		Version: 3.8.2
+		Version: 3.8.3
 		Author: Pavel Holoborodko
 		Author URI: http://www.holoborodko.com/pavel/
 		Copyright: Pavel Holoborodko
@@ -16,7 +16,7 @@
 	Project homepage: http://www.holoborodko.com/pavel/quicklatex/
 	Contact e-mail:   pavel@holoborodko.com
 
- 	Copyright 2008-2010 Pavel Holoborodko
+ 	Copyright 2008-2015 Pavel Holoborodko
 	All rights reserved.
 
 	Contributors:
@@ -445,7 +445,7 @@
 		<?php
 			if( $options['use_cache'] == 1 )
 				if( false == is_quicklatex_cache_writable(WP_QUICKLATEX_CACHE_DIR) )
-					echo '<div id="message" class="error"><p style="line-height:150%;"><strong>QuickLaTeX cannot access cache directory for formula images: <i>'.WP_QUICKLATEX_CACHE_DIR.'</i></strong>.<br />'.'Please create it and make sure it is writable (by <span class="ql-code" style="font-size:13px;">chmode 777</span> or through File Manager in cPanel).'.'<br />'.'<strong>Do not ignore this warning -- caching is crucial for performance of your site.</strong>'.'</p></div>';
+					echo '<div id="message" class="error"><p style="line-height:150%;"><strong>QuickLaTeX cannot access cache directory for formula images: <i>'.WP_QUICKLATEX_CACHE_DIR.'</i></strong>.<br />'.'Please create it and make sure it is writeable (by <span class="ql-code" style="font-size:13px;">chmode 755</span> or through File Manager in cPanel).'.'<br />'.'<strong>Do not ignore this warning -- caching is crucial for performance of your site.</strong>'.'</p></div>';
 		?>
 
 	<div id="wrap" >
@@ -698,7 +698,7 @@ Here is reference to non-existing equation (\ref{eq:unknown}).<br />
 					<!-- System settings -->
 					<div id="tab-system">
 						<p class="ql-heading ql-bottom-border">
-						QuickLaTeX converts formulas into PNG images and tries to cache them on your site for maximum performance.<br />
+						QuickLaTeX converts formulas into SVG/PNG images and tries to cache them on your site for maximum performance.<br />
 						By default QuickLaTeX is tolerant to mistakes in LaTeX code and stops only on critical errors.<br />
 						You can tune these settings here.<br />
 						</p>
@@ -849,7 +849,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 							<DT><a href="http://cityjin.com" target="_blank">Dmitriy Gubanov</a></dt>
 							<DD class="ql-people">Server-side implementation and administration.</dd>
 							
-							<DT><a href="http://qm-interpretation.com/" target="_blank">Kim Kirkpatrick</a></dt>
+							<DT><a href="http://www.legacy.com/obituaries/santafenewmexican/obituary.aspx?pid=155800823" target="_blank">Kim Kirkpatrick</a> <i>(Miss you my dear friend, may your soul rest in peace)</i></dt>
 							<DD class="ql-people">Ideas &amp; plugin development.</dd>
 						</DL>
 
@@ -914,7 +914,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 							</form>
 							
 						<p class="ql-p-centered">
-							<small>	All donations will be used for development of the plugin.</small>							
+							<small>	All donations are used for development of the plugin.</small>							
 						</p>
 						
 						</div>
@@ -1489,7 +1489,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 					{
 						//echo '<pre>'.$server_resp['body'].'</pre>';					
 						
-						// Everyting is ok, parse server response
+						// Everything is ok, parse server response
 						if (preg_match("/^([-]?\d+)\r\n(\S+)\s([-]?\d+)\s(\d+)\s(\d+)\r?\n?([\s\S]*)/", $server_resp['body'], $regs))
 						{
 						
@@ -1561,7 +1561,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 					
 						$error_msg = "Cannot connect to QuickLaTeX server: ".$server_resp->get_error_message()."\nPlease make sure your server/PHP settings allow HTTP requests to external resources (\"allow_url_fopen\", etc.)\nThese links might help in finding solution:\nhttp://wordpress.org/extend/plugins/core-control/\nhttp://wordpress.org/support/topic/an-unexpected-http-error-occurred-during-the-api-request-on-wordpress-3?replies=37";
 					}
-
+                    unset($server);
 			} // if(!$image_url)
 
 
@@ -1735,6 +1735,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 				// Send statistics to the server
 				$server = new WP_Http;
 				$server->post($url,array('body'=>$body, 'blocking'=>false));
+                unset($server);
 			}
 		}
 
@@ -2038,7 +2039,7 @@ QuickLaTeX is free under linkware license. Which means service can be used: (a) 
 	// ********************************************************
 	// Utilities
 	
-	// Try to create and check if cache folder is writable
+	// Try to create and check if cache folder is writeable
 	// Reference: use is_readable() to check readability
 	function is_quicklatex_cache_writable($path)
 	{
