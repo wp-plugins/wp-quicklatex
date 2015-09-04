@@ -52,9 +52,6 @@ LaTeX to be installed on user's server or hosting account. Just install the plug
 1. Download WP QuickLaTeX plug-in.
 2. Unzip the plugin file and upload its content to `wp-content/plugins` folder of your blog.
 3. Activate WP-QuickLaTeX through the 'Plugins' menu in Wordpress.
-4. Create `ql-cache` folder in `wp-content` and make it writable (by `chmod 777` or through File Manager in cPanel).
-
-WP-QuickLaTeX stores expression images in the folder `wp-content/ql-cache`, greatly boosting performance of your site. 
 
 == Frequently Asked Questions ==
 
