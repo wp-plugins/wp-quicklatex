@@ -73,7 +73,7 @@ I'll do my best to help you.
 == Change Log ==
 
 = 3.8.3 =
-* Image size reduction using OptiPNG.
+* Image size optimization using OptiPNG.
 * Minimized memory usage. Useful for restricted PHP configurations.
 
 = 3.8.2 =
