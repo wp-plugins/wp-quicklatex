@@ -12,7 +12,7 @@ Advanced LaTeX plugin. Native LaTeX syntax. Allows custom preamble, TikZ and oth
 
 Insert formulas & graphics in the posts and comments using native LaTeX shorthands directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info. 
 
-1.  Standard LaTeX expressions can be cut and pasted directly into WordPress posts, pages, and comments; display environments require no enclosures, other expressions require only a surrounding <code>$..$</code> or <code>\[..\]</code>.  No need for enclosing tags <code>[latex] ... [/latex]</code> (you can still use them for compatibility with legacy plugins).
+1.  Standard LaTeX expressions can be cut and pasted directly into WordPress posts, pages, and comments; display environments require no enclosures, other expressions require only a surrounding <code>$..$</code> or <code>\[..\]</code>.  No need for enclosing tags <code>[latex] ... [/latex]</code>.
 1.  Correct vertical positioning of inline formulas relative to baseline of surrounding text. Say “NO” to jumpy equations produced by other plugins!
 1.  SVG vector graphics support, so that formulas are crisp regardless of scaling in browser.
 1.  (AMS)LaTeX displayed math environments support: <code>equation, align, gather, multiline, flalign, alignat,</code> etc.
