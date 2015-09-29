@@ -49,9 +49,9 @@ To see plugin in action please visit math-pages on my blog, e.g. [Central Differ
 WP QuickLaTeX is based on the free web service [QuickLaTeX.com](http://quicklatex.com/) and doesn't require 
 LaTeX to be installed on user's server or hosting account. Just install the plugin and you are good to go.
 
-1. Download WP QuickLaTeX plug-in.
-2. Unzip the plugin file and upload its content to `wp-content/plugins` folder of your blog.
-3. Activate WP-QuickLaTeX through the 'Plugins' menu in Wordpress.
+* Download WP QuickLaTeX plug-in.
+* Unzip the plugin file and upload its content to `wp-content/plugins` folder of your blog.
+* Activate WP-QuickLaTeX through the 'Plugins' menu in Wordpress.
 
 == Frequently Asked Questions ==
 
