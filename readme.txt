@@ -12,21 +12,21 @@ Advanced LaTeX plugin. Native LaTeX syntax. Allows custom preamble, TikZ and oth
 
 Insert formulas & graphics in the posts and comments using native LaTeX shorthands directly in the text. Inline formulas, displayed equations auto-numbering, labeling and referencing, AMS-LaTeX, <code>TikZ</code>, custom LaTeX preamble. No LaTeX installation required. Easily customizable using UI page. Actively developed and maintained. Visit <a href="http://www.holoborodko.com/pavel/quicklatex/">QuickLaTeX homepage</a> for more info. 
 
-1.  Standard LaTeX expressions can be cut and pasted directly into WordPress posts, pages, and comments; display environments require no enclosures, other expressions require only a surrounding <code>$..$</code> or <code>\[..\]</code>.  No need for enclosing tags <code>[latex] ... [/latex]</code>.
-1.  Correct vertical positioning of inline formulas relative to baseline of surrounding text. Say “NO” to jumpy equations produced by other plugins!
-1.  SVG vector graphics support, so that formulas are crisp regardless of scaling in browser.
-1.  (AMS)LaTeX displayed math environments support: <code>equation, align, gather, multiline, flalign, alignat,</code> etc.
-1.  Automatic numbering of displayed equations. Override autonumbering with `\tag{}` LaTeX command.
-1.  Equation hyper-referencing by standard LaTeX rules with `\label{}`, `\ref{}`.
-1.  Custom LaTeX document preamble, allowing added <code>\usepackage{}</code> and <code>\newcommand{}</code>.
-1.  <code>TikZ</code> and <code>pgfplots</code> graphics package support.
-1.  Preview formulas in comments before publishing. Additionally [AJAX Comment Preview](http://blogwaffe.com/ajax-comment-preview/) plugin should be installed to enable this feature.
-1.  Meaningful error messages for mistakes in LaTeX code.
-1.  Precise font properties tuning: <code>size, text and background color</code>. 
-1.  Easy style customization using UI or CSS file.
-1.  No LaTeX installation is required. 
-1.	QuickLaTeX.com automatically provides formula images, which are then cached on user's server.
-1.  Administrative settings page for setting global parameters; AJAX-ified.
+*  Standard LaTeX expressions can be cut and pasted directly into WordPress posts, pages, and comments; display environments require no enclosures, other expressions require only a surrounding <code>$..$</code> or <code>\[..\]</code>.  No need for enclosing tags <code>[latex] ... [/latex]</code>.
+*  Correct vertical positioning of inline formulas relative to baseline of surrounding text. Say “NO” to jumpy equations produced by other plugins!
+*  SVG vector graphics support, so that formulas are crisp regardless of scaling in browser.
+*  (AMS)LaTeX displayed math environments support: <code>equation, align, gather, multiline, flalign, alignat,</code> etc.
+*  Automatic numbering of displayed equations. Override autonumbering with `\tag{}` LaTeX command.
+*  Equation hyper-referencing by standard LaTeX rules with `\label{}`, `\ref{}`.
+*  Custom LaTeX document preamble, allowing added <code>\usepackage{}</code> and <code>\newcommand{}</code>.
+*  <code>TikZ</code> and <code>pgfplots</code> graphics package support.
+*  Preview formulas in comments before publishing. Additionally [AJAX Comment Preview](http://blogwaffe.com/ajax-comment-preview/) plugin should be installed to enable this feature.
+*  Meaningful error messages for mistakes in LaTeX code.
+*  Precise font properties tuning: <code>size, text and background color</code>. 
+*  Easy style customization using UI or CSS file.
+*  No LaTeX installation is required. 
+*  QuickLaTeX.com automatically provides formula images, which are then cached on user's server.
+*  Administrative settings page for setting global parameters; AJAX-ified.
 
 Just place LaTeX math expressions into your text and enable QuickLaTeX on the page by <code>[latexpage]</code> command.
 WP QuickLaTeX will convert them to high-quality images and embed into post. Inline formulas will be properly aligned with the text.
