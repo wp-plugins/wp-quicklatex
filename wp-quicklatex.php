@@ -72,7 +72,7 @@
 	// Prevent direct call to this php file
 	if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
-	/* Version check */
+	// Version check
 	global $wp_version;
 
 	$exit_msg='WP QuickLaTeX requires Wordpress 2.8 or newer. Please update!';
